@@ -1,0 +1,25 @@
+* text=auto
+* eol=lf
+
+*.afm binary
+*.dll binary
+*.eot binary
+*.exe binary
+*.gif binary
+*.ico binary
+*.jar binary
+*.jpg binary
+*.mmdb binary
+*.mwb binary
+*.oet binary
+*.otf binary
+*.pdf binary
+*.phar binary
+*.png binary
+*.svg binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.xls binary
+*.xlsx binary
+*.z binary
