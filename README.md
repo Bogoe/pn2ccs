@@ -6,11 +6,13 @@ The tool allows to input a Petri net (by drawing it using the interface or impor
 
 # Supported (Desktop) Browsers
 The first version number is the *minimum* version that should be supported according to [browser-compat-data](https://github.com/mdn/browser-compat-data). The numbers in parentheses are the versions that have been tested. **Important:** The browser must also support drag-and-drop (likely requires a mouse/cursor).
+
 - Google Chrome 79+ (122 on Windows 11)
 - Microsoft Edge 79+ (122 on Windows 11)
 - Mozilla Firefox 75+ (123 on Windows 11)
 - Opera 67+ (107 on Windows 11)
 - Safari 14.1+ (not tested!)
+
 The tool shows a warning if it detects that the browser does not support all the needed functionality.
 
 
