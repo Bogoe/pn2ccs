@@ -1,0 +1,502 @@
+/* Copyright (C) 2024  Benjamin Bogø
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* General HTML */
+*,
+::before,
+::after {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: #ffffff;
+	color: #000000;
+	display: grid;
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+	gap: 10px;
+	grid-template-columns: 2fr 1fr;
+	grid-template-rows: auto auto 1fr;
+	height: 100vh;
+	margin: 0;
+	padding: 10px;
+}
+
+h1,
+h2,
+h3 {
+	font-weight: bold;
+	margin: 0;
+}
+
+h1 {
+	font-size: 2em;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	font-size: 1.25em;
+}
+
+p {
+	margin: 0;
+}
+
+ul {
+	margin: 0;
+	padding-left: 20px;
+}
+
+img {
+	width: 100%;
+}
+
+button,
+.button {
+	background-color: #3355ff;
+	background-image: linear-gradient(#5577ff, #3355ff);
+	border: 1px solid #2244ff;
+	color: #ffffff;
+	cursor: pointer;
+	display: inline-block;
+	font-size: 1em;
+	padding: 4px 8px;
+	text-align: center;
+	vertical-align: baseline;
+}
+
+button.red {
+	background-color: #ff0000;
+	background-image: linear-gradient(#ff2222, #ff0000);
+	border: 1px solid #ee0000;
+	color: #ffffff;
+}
+
+button:disabled,
+button:disabled:active,
+button:disabled:hover,
+.button:disabled,
+.button:disabled:active,
+.button:disabled:hover {
+	background-color: #eeeeee;
+	background-image: linear-gradient(#ffffff, #dddddd);
+	border: 1px solid #999999;
+	box-shadow: none;
+	color: #777777;
+	cursor: default;
+}
+
+button:active,
+button:hover,
+.button:active,
+.button:hover {
+	background-color: #5577ff;
+	background-image: linear-gradient(#7799ff, #5577ff);
+}
+
+button.red:active:not(:disabled),
+button.red:hover:not(:disabled) {
+	background-color: #ff2222;
+	background-image: linear-gradient(#ff4444, #ff2222);
+}
+
+.inline-button {
+	font-size: 0.8em;
+	padding: 2px 4px;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	color: #000000;
+	font-size: 1em;
+	padding: 8px;
+	width: 100%;
+}
+
+input[type="text"][pattern]:valid:not(:placeholder-shown),
+input[type="number"]:valid:not(:disabled) {
+	border-color: #008800;
+	outline-color: #008800;
+}
+
+input[type="text"][pattern]:invalid:not(:placeholder-shown),
+input[type="number"]:invalid:not(:disabled) {
+	border-color: #ff0000;
+	outline-color: #ff0000;
+}
+
+input[type="file"] {
+	font-size: 1em;
+	padding: 8px 0;
+	width: 100%;
+}
+
+code {
+	background-color: #dddddd;
+}
+
+.box {
+	border: 1px solid #999999;
+	display: block;
+	overflow: auto;
+	padding: 10px;
+	position: relative;
+	word-break: break-word;
+}
+
+.flex-col {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.flex-row {
+	display: flex;
+	flex-direction: row;
+	gap: 10px;
+}
+
+.grid {
+	display: grid;
+	gap: 10px;
+}
+
+
+/* General SVG */
+text {
+	alignment-baseline: middle;
+	pointer-events: none;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.node,
+.edge {
+	fill: transparent;
+	stroke-width: 3px;
+	stroke: #000000;
+}
+
+.point {
+	fill: #000000;
+}
+
+
+/* Menu */
+#menu {
+	grid-column: 1 / span 2;
+	grid-row: 1;
+}
+
+#logo {
+	white-space: nowrap;
+}
+
+#menu>button {
+	width: 100%;
+}
+
+
+/* Petri net */
+#pnContainer {
+	grid-column: 1;
+	grid-row: 2 / span 2;
+	grid-template-columns: auto auto 1fr;
+	grid-template-rows: 23.2px 84px 1fr;
+}
+
+#pnContainer>h3 {
+	grid-column: 1 / span 2;
+}
+
+#hints {
+	grid-column: 3;
+	grid-row: 1 / span 2;
+	list-style-type: "- ";
+	overflow: auto;
+	padding-left: 20px;
+	white-space: nowrap;
+}
+
+#pn {
+	background-color: #dddddd;
+	grid-column: 1 / span 3;
+	height: 100%;
+	width: 100%;
+}
+
+#pn .node {
+	fill: #dddddd;
+}
+
+.name {
+	font-family: 'Times New Roman', serif;
+	font-size: 24px;
+}
+
+.attr {
+	font-family: 'Times New Roman', serif;
+	font-size: 16px;
+}
+
+.drag-and-drop {
+	border: 1px solid #999999;
+	flex-shrink: 0;
+	height: 84px;
+	padding: 1px;
+	width: 84px;
+}
+
+.drag-and-drop>* {
+	height: 80px;
+	width: 80px;
+}
+
+.selected .node,
+.selected .edge {
+	stroke-width: 6px;
+}
+
+.selected .point {
+	stroke-width: 2px;
+	stroke: #000000;
+}
+
+
+/* Classification */
+#classesContainer {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+#classes {
+	alignment-baseline: middle;
+	font-family: 'Times New Roman', serif;
+	font-size: 5px;
+}
+
+#classes>g>rect {
+	fill: #ffffff;
+	stroke-width: 1px;
+	stroke: #999999;
+}
+
+#classes>g>text {
+	fill: #999999;
+}
+
+#classes>.active>text {
+	fill: #000000;
+}
+
+#classPetriNet.active>rect {
+	stroke: #282828;
+	fill: #ffffff;
+}
+
+#classGroupChoiceNet.active>rect {
+	stroke: #ffbb00;
+	fill: #ffe399;
+}
+
+#class2TauSynchronisationNet.active>rect {
+	stroke: #cc6600;
+	fill: #eac199;
+}
+
+#classCCSNet.active>rect {
+	stroke: #007f00;
+	fill: #99cb99;
+}
+
+#classFreeChoiceNet.active>rect {
+	stroke: #ff0000;
+	fill: #ff9999;
+}
+
+#classWorkflowNet.active>rect {
+	stroke: #0000ff;
+	fill: #9999ff;
+}
+
+#classFreeChoiceWorkflowNet.active>rect {
+	stroke: #ff00ff;
+	fill: #ff99ff;
+}
+
+#classPetriNet>text {
+	text-anchor: end;
+}
+
+#classGroupChoiceNet>text {
+	text-anchor: start;
+}
+
+#class2TauSynchronisationNet>text {
+	text-anchor: middle;
+}
+
+#classCCSNet>text {
+	text-anchor: middle;
+}
+
+#classFreeChoiceNet>text {
+	text-anchor: start;
+}
+
+#classWorkflowNet>text {
+	text-anchor: end;
+}
+
+#classFreeChoiceWorkflowNet>text {
+	text-anchor: middle;
+}
+
+
+/* CCS */
+#ccsContainer {
+	grid-column: 2;
+	grid-row: 3;
+}
+
+#ccs {
+	background-color: #dddddd;
+	color: #222222;
+	font-family: 'Consolas', monospace;
+	height: 100%;
+	margin: 0;
+	overflow: auto;
+	padding: 8px;
+}
+
+.overline {
+	color: #888888;
+	text-decoration: overline;
+}
+
+
+/* Dialog */
+#dialog {
+	align-self: center;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	box-shadow: 0 0 0 50vmax #00000066;
+	display: none;
+	justify-self: center;
+	margin: -10px !important;
+	max-height: min(400px, calc(100vh - 20px));
+	max-width: min(600px, calc(100vw - 20px));
+	overflow: auto;
+	position: fixed;
+	z-index: 999;
+}
+
+#dialog.grid {
+	display: grid;
+}
+
+#dialog::before {
+	bottom: 0;
+	content: "";
+	display: block;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: -1;
+}
+
+#dialogTitle {
+	width: 100%;
+}
+
+#dialogButtons>button {
+	width: 100%;
+}
+
+
+/* Help */
+#help {
+	align-self: center;
+	background-color: #ffffff;
+	border: 1px solid #999999;
+	box-shadow: 0 0 0 50vmax #00000066;
+	display: none;
+	justify-self: center;
+	margin: -10px !important;
+	max-height: calc(100vh - 20px);
+	max-width: calc(100vw - 20px);
+	overflow: auto;
+	position: fixed;
+	z-index: 1000;
+}
+
+#help.grid {
+	display: grid;
+}
+
+#helpButtonClose {
+	margin-left: auto;
+}
+
+.gif {
+	grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+}
+
+.gif>h3 {
+	grid-column: 1 / -1;
+}
+
+.gif img {
+	margin-top: auto;
+}
+
+
+/* No support */
+#noSupport {
+	background-color: #ffffff;
+	bottom: 0;
+	display: block;
+	left: 0;
+	padding: 10px;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 10000;
+}
+
+#noSupport.hide {
+	display: none;
+}
+
+#noDragAndDrop {
+	display: none;
+}
+
+#noDragAndDrop.red {
+	color: red;
+	display: list-item;
+	font-weight: bold;
+}

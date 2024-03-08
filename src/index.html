@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Petri Net to CCS (PN2CCS)</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<script defer src="js/ccs.js"></script>
+	<script defer src="js/pn.js"></script>
+	<script defer src="js/gui.js"></script>
+</head>
+<body>
+	<div id="menu" class="flex-row box">
+		<h1 id="logo">PN2CCS</h1>
+		<button id="buttonReset">Reset</button>
+		<button id="buttonImportPN">Import PN</button>
+		<button id="buttonExportPN">Export PN</button>
+		<button id="buttonExportCCS">Export CCS</button>
+		<button id="buttonHelp">Help</button>
+	</div>
+	<div id="pnContainer" class="grid box">
+		<h3>Petri Net (Input)</h3>
+		<ul id="hints" class="box">
+			<li id="noDragAndDrop">Your browser/device appears to NOT support drag-and-drop which means that you cannot create new places/transitions.</li>
+			<li><b>Add Place:</b> Drag-and-drop place onto empty space.</li>
+			<li><b>Add Transition:</b> Drag-and-drop transition onto empty space.</li>
+			<li><b>Select element:</b> Click on element.</li>
+			<li><b>Deselect element:</b> Click on selected element.</li>
+			<li><b>Add edge:</b> Select place/transition -> click on transition/place.</li>
+			<li><b>Change place tokens:</b> Right click place -> enter tokens -> click on <button class="inline-button">Update place</button>.</li>
+			<li><b>Change transition label:</b> Right click transition -> enter label -> click on <button class="inline-button">Update transition</button>.</li>
+			<li><b>Delete place:</b> Right click place -> click on <button class="inline-button red">Delete place</button>.</li>
+			<li><b>Delete transition:</b> Right click transition -> click on <button class="inline-button red">Delete transition</button>.</li>
+			<li><b>Delete edge:</b> Right click edge -> click on <button class="inline-button red">Delete edge</button>.</li>
+			<li><b>Move Petri net:</b> Drag anywhere (except selected node).</li>
+			<li><b>Move place/transition:</b> Select place/transition -> drag selected place/transition.</li>
+		</ul>
+		<div class="drag-and-drop">
+			<div id="dragPlace" draggable="true">
+				<svg viewBox="-40 -40 80 80">
+					<circle class="node" cx="0" cy="0" r="30" />
+					<text class="name" x="0" y="-5">p</text>
+					<text class="attr" x="0" y="15">⬤x0</text>
+				</svg>
+			</div>
+		</div>
+		<div class="drag-and-drop">
+			<div id="dragTransition" draggable="true">
+				<svg viewBox="-40 -40 80 80">
+					<rect class="node" x="-35" y="-25" width="70" height="50" />
+					<text class="name" x="0" y="-5">t</text>
+					<text class="attr" x="0" y="15">τ</text>
+				</svg>
+			</div>
+		</div>
+		<svg id="pn"></svg>
+	</div>
+	<div id="classesContainer" class="flex-col box">
+		<h3>Classification (Analysis)</h3>
+		<svg id="classes"></svg>
+	</div>
+	<div id="ccsContainer" class="flex-col box">
+		<h3>CCS (Output)</h3>
+		<pre id="ccs"></pre>
+	</div>
+	<form id="dialog" class="box">
+		<div class="flex-row box">
+			<h2 id="dialogTitle"></h2>
+			<a id="dialogButtonClose" class="button">x</a>
+		</div>
+		<div id="dialogContent" class="grid box"></div>
+		<div id="dialogButtons" class="flex-row"></div>
+	</form>
+	<div id="help" class="box">
+		<div class="flex-row box">
+			<h2>Help</h2>
+			<a id="helpButtonClose" class="button">x</a>
+		</div>
+		<div class="flex-col box">
+			<h3>Description</h3>
+			<p>This tool takes a <b>Petri net as input</b>, <b>analyses it to classify</b> the Petri net and determine if it can be encoded into <b>CCS output</b>.</p>
+			<p>The input Petri net can be given either by <b>importing a PNML-file</b> using the <button class="inline-button">Import PN</button>-button or <b>drawing a Petri net</b> in the <b>Petri Net (Input)</b>-box.</p>
+			<p>Whenever the Petri net is changed, <b>the Petri net is classified</b> and the result is shown in the <b>Classification (Analysis)</b>-box. Colored boxes (black text) means the Petri net is in that class while grayed out boxes (gray text) means it is <b>not</b> in that class.</p>
+			<p>Whenever the Petri net is changed and is a group-choice net or 2-τ-synchronisation net, <b>the Petri net encoded as a CCS process</b> is shown in the <b>CCS (Output)</b>-box.</p>
+		</div>
+		<div class="grid box gif">
+			<h3>Draw Petri net</h3>
+			<div class="flex-col box">
+				<p><b>Add Place:</b> Drag-and-drop place onto empty space.</p>
+				<img src="img/add-place.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Add Transition:</b> Drag-and-drop transition onto empty space.</p>
+				<img src="img/add-transition.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Select element:</b> Click on element.</p>
+				<img src="img/select.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Deselect element:</b> Click on selected element.</p>
+				<img src="img/deselect.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Add edge:</b> Select place/transition -> click on transition/place.</p>
+				<img src="img/add-edge.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Change place tokens:</b> Right click place -> enter tokens -> click on <button class="inline-button">Update place</button>.</p>
+				<img src="img/change-place-tokens.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Change transition label:</b> Right click transition -> enter label -> click on <button class="inline-button">Update transition</button>.</p>
+				<img src="img/change-transition-label.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Delete place:</b> Right click place -> click on <button class="inline-button red">Delete place</button>.</p>
+				<img src="img/delete-place.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Delete transition:</b> Right click transition -> click on <button class="inline-button red">Delete transition</button>.</p>
+				<img src="img/delete-transition.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Delete edge:</b> Right click edge -> click on <button class="inline-button red">Delete edge</button>.</p>
+				<img src="img/delete-edge.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Move Petri net:</b> Drag anywhere (except selected node).</p>
+				<img src="img/move-pn.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Move place/transition:</b> Select place/transition -> drag selected place/transition.</p>
+				<img src="img/move-node.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Add multi-line edge:</b> Select place/transition -> click on empty space (0 or more times) -> click on transition/place.</p>
+				<img src="img/add-multi-edge.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Cancel multi-line edge:</b> Click on selected place/transition.</p>
+				<img src="img/cancel-multi-edge.gif">
+			</div>
+			<div class="flex-col box">
+				<p><b>Move multi-line edge point:</b> Select multi-line edge point -> click on empty space (0 or more times) -> click on transition/place.</p>
+				<img src="img/move-multi-edge.gif">
+			</div>
+		</div>
+		<div class="flex-col box">
+			<h3>Import Petri Net (PNML-file)</h3>
+			<p>A PNML-file can be imported using the <button class="inline-button">Import PN</button>-button. The PNML-file must represent a <b>Place/Transition net</b> like in the three examples <a href="https://www.pnml.org/version-2009/version-2009.php">on this page</a>. PNML-files are imported in a loose fashion which means that only the following are checked/used:</p>
+			<ul>
+				<li>The file is valid XML.</li>
+				<li>
+					Each place is represented by a <code>&lt;place&gt;</code>-tag with:
+					<ul>
+						<li>(Required) Unique id in a <code>id</code>-attribute on the <code>&lt;place&gt;</code>-tag.</li>
+						<li>(Optional) Marking (number of tokens) as the content of a <code>&lt;text&gt;</code>-tag in a <code>&lt;initialMarking&gt;</code>-tag in the <code>&lt;place&gt;</code>-tag. Default: 0 tokens.</li>
+						<li>(Optional) Position of the place as <code>x</code>- and <code>y</code>-attributes on a <code>&lt;position&gt;</code>-tag in a <code>&lt;graphics&gt;</code>-tag in the <code>&lt;place&gt;</code>-tag. Default: A unique position (assuming no elements have positions).</li>
+					</ul>
+				</li>
+				<li>
+					Each transition is represented by a <code>&lt;transition&gt;</code>-tag with:
+					<ul>
+						<li>(Required) Transition id in a <code>id</code>-attribute on the <code>&lt;transition&gt;</code>-tag.</li>
+						<li>(Optional) Label as the content of a <code>&lt;text&gt;</code>-tag in a <code>&lt;name&gt;</code>-tag in the <code>&lt;transition&gt;</code>-tag. Default: τ.</li>
+						<li>(Optional) Position of the transition as <code>x</code>- and <code>y</code>-attributes on a <code>&lt;position&gt;</code>-tag in a <code>&lt;graphics&gt;</code>-tag in the <code>&lt;transition&gt;</code>-tag. Default: A unique position (assuming no elements have positions).</li>
+					</ul>
+				</li>
+				<li>
+					Each edge is represented by arc <code>&lt;arc&gt;</code>-tag with:
+					<ul>
+						<li>(Required) Source id of a <b>defined</b> place/transition in a <code>&lt;source&gt;</code>-attribute on the <code>&lt;arc&gt;</code>-tag.</li>
+						<li>(Required) Target id of a <b>defined</b> place/transition in a <code>&lt;target&gt;</code>-attribute on the <code>&lt;arc&gt;</code>-tag.</li>
+					</ul>
+				</li>
+			</ul>
+			<p>Note: All places and transitions have fixed sizes in this tool. Therefore, they might overlap if the PNML-file was created in another tool.</p>
+		</div>
+		<div class="flex-col box">
+			<h3>Export Petri Net (PNML-file)</h3>
+			<p>A Petri net can be saved as a PNML-file with the information mentioned above using the <button class="inline-button">Export PN</button>-button. However, everything else, including existing ids and points for multi-line edges, is lost.</p>
+		</div>
+		<div class="flex-col box">
+			<h3>Classification</h3>
+			<p>Colored boxes (black text) means the Petri net is in that class while grayed out boxes (gray text) means it is <b>not</b> in that class. There are the following classes:</p>
+			<ul>
+				<li><b>Petri net:</b> Bipartite graph (not encodable).</li>
+				<li><b>Group-choice net:</b> For every pair of places they either have a same post set or disjointed post sets.</li>
+				<li><b>2-τ-synchronisation net:</b> All transitions has at most 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
+				<li><b>CCS net:</b> All transitions has 1 or 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
+				<li><b>Free-choice net:</b> All places with multiple outgoing edges only have edges to transitions with one ingoing edge.</li>
+				<li><b>Workflow net:</b> Has one place <i>i</i> with no ingoing edges and one place <i>o</i> with no outgoing edges such that for every place/transition <i>n</i>, there is a path from <i>i</i> to <i>o</i> via <i>n</i>.</li>
+				<li><b>Free-choice workflow net:</b> Both a free-choice net and a workflow net.</li>
+			</ul>
+		</div>
+		<div class="flex-col box">
+			<h3>CCS</h3>
+			<p>The last line shows the initial process while all the lines above show defined process constants. Syntax (square brackets shows the syntax when exporting CCS using <button class="inline-button">Export CCS</button>):</p>
+			<ul>
+				<li><b>Action:</b> <code>a</code> [<code>a?</code>]</li>
+				<li><b>Co-action:</b> <code class="overline">a</code> [<code>a!</code>]</li>
+				<li><b>Internal action:</b> <code>τ</code> [<code>τ</code>]</li>
+				<li><b>Inaction:</b> <code><b>0</b></code> [<code>0</code>]</li>
+				<li><b>Prefix:</b> <code>μ.Q</code> [<code>μ.Q</code>]</li>
+				<li><b>Choice:</b> <code>(P + P)</code> [<code>(P + P)</code>]</li>
+				<li><b>Parallel:</b> <code>(Q | Q)</code> [<code>(Q | Q)</code>]</li>
+				<li><b>Exponent:</b> <code>Q<sup>n</sup></code> [<code>Q^n</code>]</li>
+				<li><b>Restriction:</b> <code>(νa)Q</code> [<code>(νa)Q</code>]</li>
+				<li><b>Constant:</b> <code>X</code> [<code>X</code>]</li>
+			</ul>
+			<p>where <code>a</code> is a visible action, <code>τ</code> is an internal (invisible) action, <code>μ</code> is a (co-)action or internal action, <code>P</code> is a sequential process (inaction, prefix or choice) and <code>Q</code> is a process (sequential process, parallel, exponent, restriction or constant).</p>
+		</div>
+	</div>
+	<div id="noSupport">
+		<h2>Not Supported</h2>
+		<p>If you see this, then <b>JavaScript is disabled</b> or <b>your browser is not supported (too old)</b> by this tool. You will need to use (or update) one of the following browsers:</p>
+		<ul>
+			<li>Google Chrome 79+</li>
+			<li>Microsoft Edge 79+</li>
+			<li>Mozilla Firefox 75+</li>
+			<li>Opera 67+</li>
+			<li>Safari 14.1+</li>
+		</ul>
+	</div>
+</body>
+</html>
