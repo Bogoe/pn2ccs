@@ -1,0 +1,95 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>15-free-choice-after</text>
+    </name>
+    <page id="cId2">
+      <place id="cId3">
+        <name>
+          <text>p1</text>
+        </name>
+        <graphics>
+          <position x="170" y="130" />
+        </graphics>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="cId4">
+        <name>
+          <text>p2</text>
+        </name>
+        <graphics>
+          <position x="-30" y="180" />
+        </graphics>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="cId5">
+        <name>
+          <text>p3</text>
+        </name>
+        <graphics>
+          <position x="-30" y="280" />
+        </graphics>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="cId6">
+        <name>
+          <text>p4</text>
+        </name>
+        <graphics>
+          <position x="370" y="190" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId7">
+        <name>
+          <text>p5</text>
+        </name>
+        <graphics>
+          <position x="170" y="230" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <transition id="cId8">
+        <name>
+          <text>a</text>
+        </name>
+        <graphics>
+          <position x="270" y="190" />
+        </graphics>
+      </transition>
+      <transition id="cId9">
+        <name>
+          <text>b</text>
+        </name>
+        <graphics>
+          <position x="470" y="190" />
+        </graphics>
+      </transition>
+      <transition id="cId10">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="70" y="230" />
+        </graphics>
+      </transition>
+      <arc id="cId11" source="cId6" target="cId9"></arc>
+      <arc id="cId12" source="cId3" target="cId8"></arc>
+      <arc id="cId13" source="cId8" target="cId6"></arc>
+      <arc id="cId14" source="cId7" target="cId8"></arc>
+      <arc id="cId15" source="cId10" target="cId7"></arc>
+      <arc id="cId16" source="cId4" target="cId10"></arc>
+      <arc id="cId17" source="cId5" target="cId10"></arc>
+    </page>
+  </net>
+</pnml>

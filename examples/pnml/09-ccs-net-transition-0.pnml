@@ -1,0 +1,17 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>09-ccs-net-transition-0</text>
+    </name>
+    <page id="cId2">
+      <transition id="cId3">
+        <name>
+          <text>a</text>
+        </name>
+        <graphics>
+          <position x="190" y="180" />
+        </graphics>
+      </transition>
+    </page>
+  </net>
+</pnml>

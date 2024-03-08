@@ -1,0 +1,115 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>04-preliminaries-free-choice</text>
+    </name>
+    <page id="cId2">
+      <place id="cId3">
+        <name>
+          <text>p1</text>
+        </name>
+        <graphics>
+          <position x="140" y="210" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId4">
+        <name>
+          <text>p2</text>
+        </name>
+        <graphics>
+          <position x="360" y="170" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId5">
+        <name>
+          <text>p3</text>
+        </name>
+        <graphics>
+          <position x="360" y="250" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId6">
+        <name>
+          <text>p4</text>
+        </name>
+        <graphics>
+          <position x="580" y="130" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId7">
+        <name>
+          <text>p5</text>
+        </name>
+        <graphics>
+          <position x="580" y="230" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <transition id="cId8">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="250" y="210" />
+        </graphics>
+      </transition>
+      <transition id="cId9">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="470" y="90" />
+        </graphics>
+      </transition>
+      <transition id="cId10">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="470" y="170" />
+        </graphics>
+      </transition>
+      <transition id="cId11">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="470" y="250" />
+        </graphics>
+      </transition>
+      <transition id="cId12">
+        <name>
+          <text>τ</text>
+        </name>
+        <graphics>
+          <position x="680" y="180" />
+        </graphics>
+      </transition>
+      <arc id="cId13" source="cId3" target="cId8"></arc>
+      <arc id="cId14" source="cId8" target="cId4"></arc>
+      <arc id="cId15" source="cId8" target="cId5"></arc>
+      <arc id="cId16" source="cId5" target="cId11"></arc>
+      <arc id="cId17" source="cId11" target="cId7"></arc>
+      <arc id="cId18" source="cId7" target="cId12"></arc>
+      <arc id="cId19" source="cId4" target="cId10"></arc>
+      <arc id="cId20" source="cId4" target="cId9"></arc>
+      <arc id="cId21" source="cId6" target="cId12"></arc>
+      <arc id="cId22" source="cId10" target="cId6"></arc>
+      <arc id="cId23" source="cId9" target="cId6"></arc>
+    </page>
+  </net>
+</pnml>

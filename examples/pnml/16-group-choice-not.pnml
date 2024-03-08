@@ -1,0 +1,70 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>16-group-choice-not</text>
+    </name>
+    <page id="cId2">
+      <place id="cId3">
+        <name>
+          <text>p1</text>
+        </name>
+        <graphics>
+          <position x="230" y="90" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId4">
+        <name>
+          <text>p2</text>
+        </name>
+        <graphics>
+          <position x="230" y="190" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId5">
+        <name>
+          <text>p3</text>
+        </name>
+        <graphics>
+          <position x="230" y="290" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <transition id="cId6">
+        <name>
+          <text>a</text>
+        </name>
+        <graphics>
+          <position x="370" y="90" />
+        </graphics>
+      </transition>
+      <transition id="cId7">
+        <name>
+          <text>b</text>
+        </name>
+        <graphics>
+          <position x="370" y="190" />
+        </graphics>
+      </transition>
+      <transition id="cId8">
+        <name>
+          <text>c</text>
+        </name>
+        <graphics>
+          <position x="370" y="290" />
+        </graphics>
+      </transition>
+      <arc id="cId9" source="cId3" target="cId6"></arc>
+      <arc id="cId10" source="cId4" target="cId6"></arc>
+      <arc id="cId11" source="cId4" target="cId7"></arc>
+      <arc id="cId12" source="cId5" target="cId8"></arc>
+    </page>
+  </net>
+</pnml>
