@@ -141,6 +141,9 @@ class GuiEdge extends Edge {
 		this.line.points[0].y = this.from.y;
 		const dx = this.line.points[1].x - this.line.points[0].x;
 		const dy = this.line.points[1].y - this.line.points[0].y;
+		if (dx === 0 && dy === 0) {
+			return;
+		}
 		if (this.from instanceof GuiPlace) {
 			const ratio = 30 / Math.sqrt(dx * dx + dy * dy);
 			this.line.points[0].x += dx * ratio;
@@ -157,6 +160,9 @@ class GuiEdge extends Edge {
 		this.line.points[n - 1].y = this.to.y;
 		const dx = this.line.points[n - 2].x - this.line.points[n - 1].x;
 		const dy = this.line.points[n - 2].y - this.line.points[n - 1].y;
+		if (dx === 0 && dy === 0) {
+			return;
+		}
 		if (this.to instanceof GuiPlace) {
 			const ratio = 30 / Math.sqrt(dx * dx + dy * dy);
 			this.line.points[n - 1].x += dx * ratio;
