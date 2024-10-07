@@ -1,0 +1,127 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>s01-vending-machine</text>
+    </name>
+    <page id="cId2">
+      <place id="cId3">
+        <name>
+          <text>p1</text>
+        </name>
+        <graphics>
+          <position x="170" y="200" />
+        </graphics>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="cId4">
+        <name>
+          <text>p2</text>
+        </name>
+        <graphics>
+          <position x="350" y="150" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId5">
+        <name>
+          <text>p3</text>
+        </name>
+        <graphics>
+          <position x="350" y="240" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId6">
+        <name>
+          <text>p4</text>
+        </name>
+        <graphics>
+          <position x="530" y="150" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId7">
+        <name>
+          <text>p5</text>
+        </name>
+        <graphics>
+          <position x="530" y="240" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId8">
+        <name>
+          <text>p6</text>
+        </name>
+        <graphics>
+          <position x="710" y="200" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <transition id="cId9">
+        <name>
+          <text>coin</text>
+        </name>
+        <graphics>
+          <position x="260" y="200" />
+        </graphics>
+      </transition>
+      <transition id="cId10">
+        <name>
+          <text>coffee</text>
+        </name>
+        <graphics>
+          <position x="440" y="120" />
+        </graphics>
+      </transition>
+      <transition id="cId11">
+        <name>
+          <text>tea</text>
+        </name>
+        <graphics>
+          <position x="440" y="180" />
+        </graphics>
+      </transition>
+      <transition id="cId12">
+        <name>
+          <text>cup</text>
+        </name>
+        <graphics>
+          <position x="440" y="240" />
+        </graphics>
+      </transition>
+      <transition id="cId13">
+        <name>
+          <text>serve</text>
+        </name>
+        <graphics>
+          <position x="620" y="200" />
+        </graphics>
+      </transition>
+      <arc id="cId14" source="cId3" target="cId9"></arc>
+      <arc id="cId15" source="cId9" target="cId4"></arc>
+      <arc id="cId16" source="cId9" target="cId5"></arc>
+      <arc id="cId17" source="cId5" target="cId12"></arc>
+      <arc id="cId18" source="cId12" target="cId7"></arc>
+      <arc id="cId19" source="cId7" target="cId13"></arc>
+      <arc id="cId20" source="cId4" target="cId11"></arc>
+      <arc id="cId21" source="cId4" target="cId10"></arc>
+      <arc id="cId22" source="cId6" target="cId13"></arc>
+      <arc id="cId23" source="cId11" target="cId6"></arc>
+      <arc id="cId24" source="cId10" target="cId6"></arc>
+      <arc id="cId25" source="cId13" target="cId8"></arc>
+    </page>
+  </net>
+</pnml>

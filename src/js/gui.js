@@ -25,8 +25,8 @@ class GuiPlace extends Place {
 		this.element.model = this;
 		this.element.innerHTML = `
 			<circle class="node" cx="0" cy="0" r="30" />
+			<text class="attr" x="0" y="15">${this.tokens > 3 ? "⬤x" + this.tokens : "⬤".repeat(this.tokens)}</text>
 			<text class="name" x="0" y="-5">${this.getName()}</text>
-			<text class="attr" x="0" y="15">⬤x${this.tokens}</text>
 		`;
 		this.setXY(x, y);
 	}
@@ -34,14 +34,14 @@ class GuiPlace extends Place {
 	setId(id) {
 		super.setId(id);
 		if (this.element) {
-			this.element.children[1].innerHTML = this.getName();
+			this.element.children[2].innerHTML = this.getName();
 		}
 	}
 
 	setTokens(tokens) {
 		super.setTokens(tokens);
 		if (this.element) {
-			this.element.children[2].innerHTML = "⬤x" + this.tokens;
+			this.element.children[1].innerHTML = this.tokens > 3 ? "⬤x" + this.tokens : "⬤".repeat(this.tokens);
 		}
 	}
 
@@ -113,7 +113,7 @@ class GuiEdge extends Edge {
 	line;
 	points;
 
-	constructor(id, from, to, weight, points) {
+	constructor(id, from, to, weight, points, isReadOnly) {
 		super(id, from, to, weight);
 		if (!(from instanceof GuiPlace || from instanceof GuiTransition)) {
 			throw new TypeError("From-node must be a gui-place or a gui-transition.");
@@ -127,7 +127,7 @@ class GuiEdge extends Edge {
 		this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
 		this.element.model = this;
 		this.element.innerHTML = `
-			<polyline class="edge" points="${points.map(point => `${point.x} ${point.y}`).join(" ")}" marker-end="url(#arrow)" />
+			<polyline class="edge" points="${points.map(point => `${point.x} ${point.y}`).join(" ")}" marker-end="url(#arrow${+isReadOnly})" />
 		`;
 		this.line = this.element.children[0];
 		this.points = Array.from(this.line.points).slice(1, -1).map((point, index) => new GuiEdgePoint(this, point, index + 1));
@@ -230,6 +230,7 @@ class GuiEdgePoint {
 class GuiPetriNet extends PetriNet {
 	gui;
 	svg;
+	isReadOnly;
 	tempEdge;
 	arcs;
 	nodes;
@@ -238,6 +239,7 @@ class GuiPetriNet extends PetriNet {
 
 	selectedElement = null;
 	isMoving = false;
+	isZooming = false;
 	hasMoved = false;
 	moveElement = null;
 	animationFrame = 0;
@@ -249,7 +251,7 @@ class GuiPetriNet extends PetriNet {
 	lastY = 0;
 	isBatch = false;
 
-	constructor(gui, svg) {
+	constructor(gui, svg, isReadOnly) {
 		super();
 		if (!(gui instanceof Gui)) {
 			throw new Error("Gui must be a Gui.");
@@ -257,10 +259,13 @@ class GuiPetriNet extends PetriNet {
 		if (!(svg instanceof SVGSVGElement)) {
 			throw new Error("Element is not a SVG-element.");
 		}
+		if (typeof isReadOnly !== "boolean") {
+			throw new Error("Read-only flag is not a boolean.");
+		}
 		this.gui = gui;
 		this.svg = svg;
 		this.svg.innerHTML = `
-			<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+			<marker id="arrow${+isReadOnly}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
 				<path d="M 0 0 L 10 5 L 0 10 z" />
 			</marker>
 			<marker id="dot" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="4" markerHeight="4">
@@ -270,6 +275,7 @@ class GuiPetriNet extends PetriNet {
 			<g id="arcs"></g>
 			<g id="nodes"></g>
 		`;
+		this.isReadOnly = isReadOnly;
 		this.tempEdge = this.svg.children[2];
 		this.arcs = this.svg.children[3];
 		this.nodes = this.svg.children[4];
@@ -281,12 +287,14 @@ class GuiPetriNet extends PetriNet {
 		this.svg.addEventListener("pointerleave", this.onPointerUp.bind(this));
 		this.svg.addEventListener("click", this.onClick.bind(this));
 		this.svg.addEventListener("contextmenu", this.onContextMenu.bind(this));
-		window.addEventListener("resize", this.onResize.bind(this));
+		this.svg.addEventListener("touchstart", this.onTouchStart.bind(this));
+		this.svg.addEventListener("touchmove", this.onTouchMove.bind(this));
+		this.svg.addEventListener("touchend", this.onTouchEnd.bind(this));
 		this.onResize();
 	}
 
 	update() {
-		if (!this.isBatch) {
+		if (!this.isBatch && !this.isReadOnly) {
 			this.gui.update();
 		}
 	}
@@ -314,11 +322,21 @@ class GuiPetriNet extends PetriNet {
 		if (this.places[to.id] !== to && this.transitions[to.id] !== to) {
 			throw new Error("Unrelated to-node cannot be used.");
 		}
-		const edge = new GuiEdge(this.edges.length, from, to, weight, points);
+		const edge = new GuiEdge(this.edges.length, from, to, weight, points, this.isReadOnly);
 		this.edges.push(edge);
 		this.arcs.appendChild(edge.element);
 		this.update();
 		return edge;
+	}
+
+	addDirectEdge(from, to, weight) {
+		const source = this.svg.createSVGPoint();
+		source.x = from.x;
+		source.y = from.y;
+		const target = this.svg.createSVGPoint();
+		target.x = to.x;
+		target.y = to.y;
+		return this.addEdge(from, to, weight, [source, target]);
 	}
 
 	removePlace(place) {
@@ -403,6 +421,7 @@ class GuiPetriNet extends PetriNet {
 		this.isBatch = true;
 		this.setSelectedElement(null);
 		this.isMoving = false;
+		this.isZooming = false;
 		this.hasMoved = false;
 		this.viewX = 0;
 		this.viewY = 0;
@@ -420,7 +439,83 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	update2TauSynchronisationNet(petriNet) {
+		if (!this.isReadOnly) {
+			throw new Error("Cannot update editable Petri net to a 2-τ-synchronisation.");
+		}
+		this.clear();
+		const is2TauSynchronisationNet = petriNet.is2TauSynchronisationNet();
+		if (!is2TauSynchronisationNet && !petriNet.isGroupChoiceNet()) {
+			return false;
+		}
+		petriNet.places.forEach(place => this.addPlace(place.tokens, place.x, place.y));
+		petriNet.transitions.forEach(transition => this.addTransition(transition.label, transition.x, transition.y));
+		petriNet.places.forEach(place => place.out.forEach(edge => this.addEdge(this.places[edge.from.id], this.transitions[edge.to.id], edge.weight, Array.from(edge.line.points))));
+		petriNet.transitions.forEach(transition => transition.out.forEach(edge => this.addEdge(this.transitions[edge.from.id], this.places[edge.to.id], edge.weight, Array.from(edge.line.points))));
+		if (is2TauSynchronisationNet) {
+			return true;
+		}
+		this.transitions.forEach(transition => {
+			if (transition.in.length <= (transition.label === "τ" ? 2 : 1)) {
+				return;
+			}
+			const places = transition.in.map(edge => edge.from);
+			const transitions = places[0].out.map(edge => edge.to);
+			const done = transitions.every(transition => transition.label === "τ") ? 2 : 1;
+			const order = [];
+			for (let i = places.length - 1; i >= done; i--) {
+				const first = Math.floor(i * Math.random());
+				const second = Math.floor((i - 1) * Math.random());
+				order.push(Math.min(first, second), Math.max(first, second + (first <= second)));
+			}
+			const layers = [0];
+			let lastIndex = 0;
+			let numLayers = 1;
+			let maxNodes = 1;
+			for (let i = 2; i < order.length; i++) {
+				for (let j = lastIndex; j < i; j += 2) {
+					if (order[i] === order[j]) {
+						maxNodes = Math.max(maxNodes, (i - lastIndex) >>> 1);
+						lastIndex = i - (i & 1);
+						numLayers++;
+						break;
+					}
+				}
+				if (i & 1) {
+					layers.push(numLayers - 1);
+				}
+			}
+			const totalHeight = 60 * maxNodes;
+			const totalWidth = 210 * numLayers + 20;
+			const xCut = transitions.reduce((xCut, transition) => Math.min(transition.x, xCut), transitions[0].x);
+			const yMid = Math.round(transitions.reduce((ySum, transition) => transition.y + ySum, 0) / transitions.length / 5) * 5 - totalHeight / 2;
+			this.places.forEach(place => place.setXY(place.x + 70 < xCut ? place.x : place.x + totalWidth, place.y));
+			this.transitions.forEach(transition => transition.setXY(transition.x + 75 < xCut ? transition.x : transition.x + totalWidth, transition.y));
+			places.forEach(place => place.out.slice().forEach(edge => this.removeEdge(edge)));
+			let nodeIndex = 0;
+			for (let i = 0; i < order.length; i += 2) {
+				if (nodeIndex > 0 && layers[(i - 2) >>> 1] != layers[i >>> 1]) {
+					nodeIndex = 0;
+				}
+				const newTransition = this.addTransition("τ", xCut + 20 + layers[i >>> 1] * 210, yMid + 30 + nodeIndex * 70);
+				const newPlace = this.addPlace(0, newTransition.x + 105, newTransition.y);
+				this.addDirectEdge(places[order[i]], newTransition, 1);
+				this.addDirectEdge(places[order[i + 1]], newTransition, 1);
+				this.addDirectEdge(newTransition, newPlace, 1);
+				places[order[i]] = newPlace;
+				places[order[i + 1]] = places[places.length - 1];
+				places.pop();
+				nodeIndex++;
+			}
+			places.forEach(place => transitions.forEach(transition => this.addDirectEdge(place, transition, 1)));
+		});
+		return true;
+	}
+
 	import(text) {
+		if (this.isReadOnly) {
+			throw new Error("Cannot import in a read-only Petri net.");
+		}
 		this.clear();
 		this.isBatch = true;
 		try {
@@ -552,13 +647,17 @@ class GuiPetriNet extends PetriNet {
 	}
 
 	onDragOver(event) {
+		if (this.isReadOnly) {
+			return;
+		}
 		event.preventDefault();
 		event.dataTransfer.dropEffect = "copy";
 	}
 
 	onDrop(event) {
 		event.preventDefault();
-		if (event.target !== this.svg) {
+		const isDrop = event.type === "drop";
+		if ((isDrop && event.target !== this.svg) || this.isReadOnly) {
 			return;
 		}
 		const data = event.dataTransfer.getData("text/plain");
@@ -567,22 +666,28 @@ class GuiPetriNet extends PetriNet {
 			return;
 		}
 		const isPlace = parts[1] === "p";
-		const x = Math.round((this.viewX + event.offsetX + (40 - parts[2])) / 10) * 10;
-		const y = Math.round((this.viewY + event.offsetY + (40 - parts[3])) / 10) * 10;
+		const bounds = this.svg.getBoundingClientRect();
+		const areaX = isDrop ? event.offsetX : event.clientX - bounds.x;
+		const areaY = isDrop ? event.offsetY : event.clientY - bounds.y;
+		const x = Math.round((this.viewX + areaX + (40 - parts[2])) / 10) * 10;
+		const y = Math.round((this.viewY + areaY + (40 - parts[3])) / 10) * 10;
 		isPlace ? this.addPlace(0, x, y) : this.addTransition("τ", x, y);
 		this.setSelectedElement(null);
 	}
 
 	onPointerDown(event) {
+		if (this.isZooming) {
+			return;
+		}
 		event.preventDefault();
 		if (event.pointerType === "mouse" && event.button !== 0) {
 			return;
 		}
-		const target = event.target === this.svg ? this.svg : event.target.parentElement;
 		this.isMoving = true;
 		this.hasMoved = false;
 		this.startX = this.lastX = event.offsetX;
 		this.startY = this.lastY = event.offsetY;
+		const target = event.target === this.svg ? this.svg : event.target.parentElement;
 		this.moveElement = target === this.selectedElement ? target : null;
 		if (!this.moveElement) {
 			return;
@@ -596,6 +701,9 @@ class GuiPetriNet extends PetriNet {
 	}
 
 	onPointerMove(event) {
+		if (this.isZooming) {
+			return;
+		}
 		event.preventDefault();
 		if (!this.isMoving) {
 			return;
@@ -609,6 +717,9 @@ class GuiPetriNet extends PetriNet {
 	}
 
 	onPointerUp(event) {
+		if (this.isZooming) {
+			return;
+		}
 		event.preventDefault();
 		if (!this.isMoving) {
 			return;
@@ -628,13 +739,19 @@ class GuiPetriNet extends PetriNet {
 	}
 
 	onClick(event) {
+		if (this.isZooming) {
+			return;
+		}
 		event.preventDefault();
-		const target = event.target === this.svg ? this.svg : event.target.parentElement;
 		if (this.hasMoved) {
 			this.hasMoved = false;
 			return;
 		}
+		const target = event.target === this.svg ? this.svg : event.target.parentElement;
 		if (target === this.svg) {
+			if (this.isReadOnly) {
+				this.setSelectedElement(null);
+			}
 			if (!this.selectedElement) {
 				return;
 			}
@@ -653,7 +770,7 @@ class GuiPetriNet extends PetriNet {
 				this.addTempPoint(target.model.x, target.model.y);
 				return;
 			}
-			if (this.selectedElement.model instanceof (isPlace ? GuiTransition : GuiPlace)) {
+			if (!this.isReadOnly && this.selectedElement.model instanceof (isPlace ? GuiTransition : GuiPlace)) {
 				this.addTempPoint(target.model.x, target.model.y);
 				this.addEdge(this.selectedElement.model, target.model, 1, Array.from(this.tempEdge.points));
 				this.setSelectedElement(null);
@@ -667,18 +784,24 @@ class GuiPetriNet extends PetriNet {
 			this.addTempPoint(target.model.x, target.model.y);
 			return;
 		}
+		if (this.isReadOnly) {
+			return;
+		}
 		if (target.model instanceof GuiEdge || target.model instanceof GuiEdgePoint) {
 			this.setSelectedElement(this.selectedElement === target ? null : target);
 		}
 	}
 
 	onContextMenu(event) {
+		if (this.isZooming) {
+			return;
+		}
 		event.preventDefault();
-		const target = event.target === this.svg ? this.svg : event.target.parentElement;
-		if (this.hasMoved) {
+		if (this.hasMoved || this.isReadOnly) {
 			this.hasMoved = false;
 			return;
 		}
+		const target = event.target === this.svg ? this.svg : event.target.parentElement;
 		if (target === this.svg) {
 			this.setSelectedElement(null);
 			return;
@@ -713,13 +836,27 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	onTouchStart(event) {
+		this.isZooming = event.touches.length >= 2;
+	}
+
+	onTouchMove(event) {
+		if (!this.isZooming) {
+			event.preventDefault();
+		}
+	}
+
+	onTouchEnd(event) {
+		this.isZooming = event.touches.length >= 2;
+	}
+
 	onResize(event) {
 		this.hasMoved = false;
 		this.svg.setAttribute("viewBox", `${this.viewX} ${this.viewY} ${this.svg.clientWidth} ${this.svg.clientHeight}`);
 	}
 
 	onKeyDown(event) {
-		if (!this.selectedElement || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || this.hasMoved) {
+		if (!this.selectedElement || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || this.hasMoved || this.isReadOnly) {
 			return;
 		}
 		if (event.key === "Escape") {
@@ -1142,6 +1279,7 @@ class GuiDialog {
 
 class Gui {
 	petriNet;
+	petriNet2Tau;
 	classification;
 	ccs;
 	dialog;
@@ -1154,14 +1292,23 @@ class Gui {
 	help;
 	helpButtonClose;
 	noSupport;
+	toggleButtons;
 	dragPlace;
 	dragTransition;
+	draggingPlace;
+	draggingTransition;
+	draggingElement = null;
+	draggingX = 0;
+	draggingY = 0;
+	draggingOffsetX = 0;
+	draggingOffsetY = 0;
+	animationFrame = 0;
 
 	constructor() {
 		document.querySelector("#noSupport").classList.add("hide");
-		document.querySelector("#noDragAndDrop").classList.toggle("red", !window.matchMedia("(any-pointer: fine)").matches);
 
-		this.petriNet = new GuiPetriNet(this, document.querySelector("#pn"));
+		this.petriNet = new GuiPetriNet(this, document.querySelector("#pn"), false);
+		this.petriNet2Tau = new GuiPetriNet(this, document.querySelector("#pn2tau"), true);
 		this.classification = new GuiClassification(document.querySelector("#classes"));
 		this.ccs = new GuiCCS(document.querySelector("#ccs"));
 		this.dialog = new GuiDialog(this, document.querySelector("#dialog"));
@@ -1175,8 +1322,11 @@ class Gui {
 		this.helpButtonClose = document.querySelector("#helpButtonClose");
 		this.noSupport = document.querySelector("#noSupport");
 		this.noSupportButtonClose = document.querySelector("#noSupportButtonClose");
+		this.toggleButtons = document.querySelectorAll(".toggle-button");
 		this.dragPlace = document.querySelector("#dragPlace");
 		this.dragTransition = document.querySelector("#dragTransition");
+		this.draggingPlace = document.querySelector("#draggingPlace");
+		this.draggingTransition = document.querySelector("#draggingTransition");
 
 		this.buttonReset.addEventListener("click", this.onReset.bind(this));
 		this.buttonImportPN.addEventListener("click", this.onImportPN.bind(this));
@@ -1184,10 +1334,21 @@ class Gui {
 		this.buttonExportCCS.addEventListener("click", this.onExportCCS.bind(this));
 		this.buttonHelp.addEventListener("click", this.onHelp.bind(this));
 		this.helpButtonClose.addEventListener("click", this.onCloseHelp.bind(this));
-		this.dragPlace.addEventListener("dragstart", this.onDragStartPlace.bind(this));
-		this.dragTransition.addEventListener("dragstart", this.onDragStartTransition.bind(this));
+		this.toggleButtons.forEach(button => button.addEventListener("click", this.onToggleClick.bind(this)));
+		if (window.matchMedia("(pointer: fine)").matches) {
+			this.dragPlace.addEventListener("dragstart", this.onDragStartPlace.bind(this));
+			this.dragTransition.addEventListener("dragstart", this.onDragStartTransition.bind(this));
+		} else {
+			this.dragPlace.addEventListener("pointerdown", this.onPointerDownPlace.bind(this));
+			this.dragTransition.addEventListener("pointerdown", this.onPointerDownTransition.bind(this));
+			this.dragPlace.addEventListener("touchstart", this.preventDefault.bind(this));
+			this.dragTransition.addEventListener("touchstart", this.preventDefault.bind(this));
+			document.body.addEventListener("pointerup", this.onPointerUp.bind(this));
+			document.body.addEventListener("pointerleave", this.onPointerUp.bind(this));
+			document.body.addEventListener("pointermove", this.onPointerMove.bind(this));
+		}
 		document.body.addEventListener("keydown", this.onKeyDown.bind(this));
-
+		window.addEventListener("resize", this.onResize.bind(this));
 		this.update();
 	}
 
@@ -1257,6 +1418,69 @@ class Gui {
 		event.dataTransfer.setData("text/plain", `t${event.offsetX},${event.offsetY}`);
 	}
 
+	onPointerDownPlace(event) {
+		event.preventDefault();
+		this.draggingOffsetX = Math.round(event.offsetX);
+		this.draggingOffsetY = Math.round(event.offsetY);
+		this.draggingElement = this.draggingPlace;
+		this.draggingPlace.classList.remove("hide");
+		this.onPointerMove(event);
+	}
+
+	onPointerDownTransition(event) {
+		event.preventDefault();
+		this.draggingOffsetX = Math.round(event.offsetX);
+		this.draggingOffsetY = Math.round(event.offsetY);
+		this.draggingElement = this.draggingTransition;
+		this.draggingTransition.classList.remove("hide");
+		this.onPointerMove(event);
+	}
+
+	onPointerMove(event) {
+		if (!this.draggingElement) {
+			return;
+		}
+		this.draggingX = Math.round(event.clientX);
+		this.draggingY = Math.round(event.clientY);
+		if (this.animationFrame === 0) {
+			this.animationFrame = window.requestAnimationFrame(this.onMove.bind(this));
+		}
+	}
+
+	onPointerUp(event) {
+		if (!this.draggingElement) {
+			return;
+		}
+		if (document.elementFromPoint(event.clientX, event.clientY) === this.petriNet.svg) {
+			event.dataTransfer = new DataTransfer();
+			event.dataTransfer.dropEffect = "copy";
+			event.dataTransfer.setData("text/plain", `${this.draggingElement === this.draggingPlace ? "p" : "t"}${this.draggingOffsetX},${this.draggingOffsetY}`);
+			this.petriNet.onDrop(event);
+		}
+		this.draggingElement.classList.add("hide");
+		this.draggingElement = null;
+		if (this.animationFrame !== 0) {
+			window.cancelAnimationFrame(this.animationFrame);
+			this.animationFrame = 0;
+		}
+	}
+
+	onMove(timeStamp) {
+		this.animationFrame = 0;
+		this.draggingElement.style.left = `${this.draggingX - this.draggingOffsetX}px`;
+		this.draggingElement.style.top = `${this.draggingY - this.draggingOffsetY}px`;
+	}
+
+	preventDefault(event) {
+		event.preventDefault();
+	}
+
+	onToggleClick(event) {
+		const container = event.target.parentElement;
+		container.classList.toggle("collapsed");
+		this.onResize();
+	}
+
 	onKeyDown(event) {
 		if (this.dialog.isVisible()) {
 			if (event.key === "Escape") {
@@ -1267,9 +1491,15 @@ class Gui {
 		this.petriNet.onKeyDown(event);
 	}
 
+	onResize(event) {
+		this.petriNet.onResize(event);
+		this.petriNet2Tau.onResize(event);
+	}
+
 	update() {
+		const isEncodable = this.petriNet2Tau.update2TauSynchronisationNet(this.petriNet);
 		this.classification.update(this.petriNet);
-		this.buttonExportCCS.disabled = !this.ccs.update(this.petriNet);
+		this.buttonExportCCS.disabled = !this.ccs.update(isEncodable ? this.petriNet2Tau : this.petriNet);
 	}
 
 	editPlace(place) {

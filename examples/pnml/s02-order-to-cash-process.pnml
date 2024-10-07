@@ -1,0 +1,211 @@
+<pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
+  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+    <name>
+     <text>s02-order-to-cash-process</text>
+    </name>
+    <page id="cId2">
+      <place id="cId3">
+        <name>
+          <text>p1</text>
+        </name>
+        <graphics>
+          <position x="40" y="190" />
+        </graphics>
+        <initialMarking>
+          <text>1</text>
+        </initialMarking>
+      </place>
+      <place id="cId4">
+        <name>
+          <text>p2</text>
+        </name>
+        <graphics>
+          <position x="200" y="190" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId5">
+        <name>
+          <text>p3</text>
+        </name>
+        <graphics>
+          <position x="280" y="270" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId6">
+        <name>
+          <text>p4</text>
+        </name>
+        <graphics>
+          <position x="440" y="230" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId7">
+        <name>
+          <text>p5</text>
+        </name>
+        <graphics>
+          <position x="440" y="310" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId8">
+        <name>
+          <text>p6</text>
+        </name>
+        <graphics>
+          <position x="600" y="230" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId9">
+        <name>
+          <text>p7</text>
+        </name>
+        <graphics>
+          <position x="600" y="310" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId10">
+        <name>
+          <text>p8</text>
+        </name>
+        <graphics>
+          <position x="760" y="230" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId11">
+        <name>
+          <text>p9</text>
+        </name>
+        <graphics>
+          <position x="760" y="310" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <place id="cId12">
+        <name>
+          <text>p10</text>
+        </name>
+        <graphics>
+          <position x="920" y="200" />
+        </graphics>
+        <initialMarking>
+          <text>0</text>
+        </initialMarking>
+      </place>
+      <transition id="cId13">
+        <name>
+          <text>checkstock</text>
+        </name>
+        <graphics>
+          <position x="120" y="190" />
+        </graphics>
+      </transition>
+      <transition id="cId14">
+        <name>
+          <text>getproduct</text>
+        </name>
+        <graphics>
+          <position x="200" y="270" />
+        </graphics>
+      </transition>
+      <transition id="cId15">
+        <name>
+          <text>confirmorder</text>
+        </name>
+        <graphics>
+          <position x="360" y="270" />
+        </graphics>
+      </transition>
+      <transition id="cId16">
+        <name>
+          <text>shipaddress</text>
+        </name>
+        <graphics>
+          <position x="520" y="230" />
+        </graphics>
+      </transition>
+      <transition id="cId17">
+        <name>
+          <text>emitinvoice</text>
+        </name>
+        <graphics>
+          <position x="520" y="310" />
+        </graphics>
+      </transition>
+      <transition id="cId18">
+        <name>
+          <text>shipproduct</text>
+        </name>
+        <graphics>
+          <position x="680" y="230" />
+        </graphics>
+      </transition>
+      <transition id="cId19">
+        <name>
+          <text>payment</text>
+        </name>
+        <graphics>
+          <position x="680" y="310" />
+        </graphics>
+      </transition>
+      <transition id="cId20">
+        <name>
+          <text>archiveorder</text>
+        </name>
+        <graphics>
+          <position x="840" y="270" />
+        </graphics>
+      </transition>
+      <transition id="cId21">
+        <name>
+          <text>rejectorder</text>
+        </name>
+        <graphics>
+          <position x="520" y="120" />
+        </graphics>
+      </transition>
+      <arc id="cId22" source="cId3" target="cId13"></arc>
+      <arc id="cId23" source="cId13" target="cId4"></arc>
+      <arc id="cId24" source="cId4" target="cId14"></arc>
+      <arc id="cId25" source="cId14" target="cId5"></arc>
+      <arc id="cId26" source="cId5" target="cId15"></arc>
+      <arc id="cId27" source="cId15" target="cId6"></arc>
+      <arc id="cId28" source="cId6" target="cId16"></arc>
+      <arc id="cId29" source="cId16" target="cId8"></arc>
+      <arc id="cId30" source="cId8" target="cId18"></arc>
+      <arc id="cId31" source="cId18" target="cId10"></arc>
+      <arc id="cId32" source="cId10" target="cId20"></arc>
+      <arc id="cId33" source="cId15" target="cId7"></arc>
+      <arc id="cId34" source="cId7" target="cId17"></arc>
+      <arc id="cId35" source="cId17" target="cId9"></arc>
+      <arc id="cId36" source="cId9" target="cId19"></arc>
+      <arc id="cId37" source="cId19" target="cId11"></arc>
+      <arc id="cId38" source="cId11" target="cId20"></arc>
+      <arc id="cId39" source="cId20" target="cId12"></arc>
+      <arc id="cId40" source="cId4" target="cId21"></arc>
+      <arc id="cId41" source="cId21" target="cId12"></arc>
+    </page>
+  </net>
+</pnml>

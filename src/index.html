@@ -4,64 +4,89 @@
 	<title>Petri Net to CCS (PN2CCS)</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
-	<script defer src="js/ccs.js"></script>
-	<script defer src="js/pn.js"></script>
-	<script defer src="js/gui.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=1.1" />
+	<script defer src="js/ccs.js?v=1.1"></script>
+	<script defer src="js/pn.js?v=1.1"></script>
+	<script defer src="js/gui.js?v=1.1"></script>
 </head>
 <body>
-	<div id="menu" class="flex-row box">
-		<h1 id="logo">PN2CCS</h1>
+	<div id="menu" class="flex box">
+		<h1 id="logo">PN2CCS<span>v1.1</span></h1>
 		<button id="buttonReset">Reset</button>
 		<button id="buttonImportPN">Import PN</button>
 		<button id="buttonExportPN">Export PN</button>
 		<button id="buttonExportCCS">Export CCS</button>
 		<button id="buttonHelp">Help</button>
 	</div>
-	<div id="pnContainer" class="grid box">
-		<h3>Petri Net (Input)</h3>
-		<ul id="hints" class="box">
-			<li id="noDragAndDrop">Your browser/device appears to NOT support drag-and-drop which means that you cannot create new places/transitions.</li>
-			<li><b>Add Place:</b> Drag-and-drop place onto empty space.</li>
-			<li><b>Add Transition:</b> Drag-and-drop transition onto empty space.</li>
-			<li><b>Select element:</b> Click on element.</li>
-			<li><b>Deselect element:</b> Click on selected element.</li>
-			<li><b>Add edge:</b> Select place/transition -> click on transition/place.</li>
-			<li><b>Change place tokens:</b> Right click place -> enter tokens -> click on <button class="inline-button">Update place</button>.</li>
-			<li><b>Change transition label:</b> Right click transition -> enter label -> click on <button class="inline-button">Update transition</button>.</li>
-			<li><b>Delete place:</b> Right click place -> click on <button class="inline-button red">Delete place</button>.</li>
-			<li><b>Delete transition:</b> Right click transition -> click on <button class="inline-button red">Delete transition</button>.</li>
-			<li><b>Delete edge:</b> Right click edge -> click on <button class="inline-button red">Delete edge</button>.</li>
-			<li><b>Move Petri net:</b> Drag anywhere (except selected node).</li>
-			<li><b>Move place/transition:</b> Select place/transition -> drag selected place/transition.</li>
-		</ul>
-		<div class="drag-and-drop">
-			<div id="dragPlace" draggable="true">
-				<svg viewBox="-40 -40 80 80">
-					<circle class="node" cx="0" cy="0" r="30" />
-					<text class="name" x="0" y="-5">p</text>
-					<text class="attr" x="0" y="15">⬤x0</text>
-				</svg>
+	<div id="leftCol" class="flex-col">
+		<div id="pnContainer" class="grid box">
+			<h3 class="one-line">Petri Net (Input)</h3>
+			<button class="toggle-button"></button>
+			<ul id="hints" class="box">
+				<li><b>Add Place:</b> Drag-and-drop place onto empty space.</li>
+				<li><b>Add Transition:</b> Drag-and-drop transition onto empty space.</li>
+				<li><b>Select element:</b> Click on element.</li>
+				<li><b>Deselect element:</b> Click on selected element.</li>
+				<li><b>Add edge:</b> Select place/transition -> click on transition/place.</li>
+				<li><b>Change place tokens:</b> Right click place -> enter tokens -> click on <button class="inline-button">Update place</button>.</li>
+				<li><b>Change transition label:</b> Right click transition -> enter label -> click on <button class="inline-button">Update transition</button>.</li>
+				<li><b>Delete place:</b> Right click place -> click on <button class="inline-button red">Delete place</button>.</li>
+				<li><b>Delete transition:</b> Right click transition -> click on <button class="inline-button red">Delete transition</button>.</li>
+				<li><b>Delete edge:</b> Right click edge -> click on <button class="inline-button red">Delete edge</button>.</li>
+				<li><b>Move Petri net:</b> Drag anywhere (except selected node).</li>
+				<li><b>Move place/transition:</b> Select place/transition -> drag selected place/transition.</li>
+			</ul>
+			<div class="drag-and-drop">
+				<div id="dragPlace" draggable="true">
+					<svg viewBox="-40 -40 80 80">
+						<circle class="node" cx="0" cy="0" r="30" />
+						<text class="attr" x="0" y="15"></text>
+						<text class="name" x="0" y="-5">p</text>
+					</svg>
+				</div>
 			</div>
-		</div>
-		<div class="drag-and-drop">
-			<div id="dragTransition" draggable="true">
-				<svg viewBox="-40 -40 80 80">
-					<rect class="node" x="-35" y="-25" width="70" height="50" />
-					<text class="name" x="0" y="-5">t</text>
-					<text class="attr" x="0" y="15">τ</text>
-				</svg>
+			<div class="drag-and-drop">
+				<div id="dragTransition" draggable="true">
+					<svg viewBox="-40 -40 80 80">
+						<rect class="node" x="-35" y="-25" width="70" height="50" />
+						<text class="name" x="0" y="-5">t</text>
+						<text class="attr" x="0" y="15">τ</text>
+					</svg>
+				</div>
 			</div>
+			<svg id="pn"></svg>
 		</div>
-		<svg id="pn"></svg>
+		<div id="pn2tauContainer" class="grid box collapsed">
+			<h3 class="one-line">Petri Net (<span title="Intermediate Representation">IR</span>)</h3>
+			<button class="toggle-button"></button>
+			<svg id="pn2tau"></svg>
+		</div>
 	</div>
-	<div id="classesContainer" class="flex-col box">
-		<h3>Classification (Analysis)</h3>
-		<svg id="classes"></svg>
+	<div id="rightCol" class="grid">
+		<div id="classesContainer" class="grid box">
+			<h3 class="one-line">Classification (Analysis)</h3>
+			<button class="toggle-button"></button>
+			<svg id="classes"></svg>
+		</div>
+		<div id="ccsContainer" class="grid box">
+			<h3 class="one-line">CCS (Output)</h3>
+			<button class="toggle-button"></button>
+			<pre id="ccs"></pre>
+		</div>
 	</div>
-	<div id="ccsContainer" class="flex-col box">
-		<h3>CCS (Output)</h3>
-		<pre id="ccs"></pre>
+	<div id="draggingPlace" class="hide">
+		<svg viewBox="-40 -40 80 80">
+			<circle class="node" cx="0" cy="0" r="30" />
+			<text class="attr" x="0" y="15"></text>
+			<text class="name" x="0" y="-5">p</text>
+		</svg>
+	</div>
+	<div id="draggingTransition" class="hide">
+		<svg viewBox="-40 -40 80 80">
+			<rect class="node" x="-35" y="-25" width="70" height="50" />
+			<text class="name" x="0" y="-5">t</text>
+			<text class="attr" x="0" y="15">τ</text>
+		</svg>
 	</div>
 	<form id="dialog" class="box">
 		<div class="flex-row box">
@@ -81,10 +106,10 @@
 			<p>This tool takes a <b>Petri net as input</b>, <b>analyses it to classify</b> the Petri net and determine if it can be encoded into <b>CCS output</b>.</p>
 			<p>The input Petri net can be given either by <b>importing a PNML-file</b> using the <button class="inline-button">Import PN</button>-button or <b>drawing a Petri net</b> in the <b>Petri Net (Input)</b>-box.</p>
 			<p>Whenever the Petri net is changed, <b>the Petri net is classified</b> and the result is shown in the <b>Classification (Analysis)</b>-box. Colored boxes (black text) means the Petri net is in that class while grayed out boxes (gray text) means it is <b>not</b> in that class.</p>
-			<p>Whenever the Petri net is changed and is a group-choice net or 2-τ-synchronisation net, <b>the Petri net encoded as a CCS process</b> is shown in the <b>CCS (Output)</b>-box.</p>
+			<p>Whenever the Petri net is changed and is a group-choice net or 2-τ-synchronisation net, <b>the Petri net encoded as a CCS process</b> is shown in the <b>CCS (Output)</b>-box. The <b>Petri Net (IR)</b>-box shows the 2-τ-synchronisation net that is generated during the encoding of a group-choice net.</p>
 		</div>
 		<div class="grid box gif">
-			<h3>Draw Petri net</h3>
+			<h3>Draw Petri Net</h3>
 			<div class="flex-col box">
 				<p><b>Add Place:</b> Drag-and-drop place onto empty space.</p>
 				<img src="img/add-place.gif">
@@ -187,12 +212,16 @@
 			<ul>
 				<li><b>Petri net:</b> Bipartite graph (not encodable).</li>
 				<li><b>Group-choice net:</b> For every pair of places they either have a same post set or disjointed post sets.</li>
-				<li><b>2-τ-synchronisation net:</b> All transitions has at most 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
-				<li><b>CCS net:</b> All transitions has 1 or 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
+				<li><b>2-τ-synchronisation net:</b> All transitions have at most 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
+				<li><b>CCS net:</b> All transitions have 1 or 2 ingoing edges - transitions with 2 ingoing edges have label τ.</li>
 				<li><b>Free-choice net:</b> All places with multiple outgoing edges only have edges to transitions with one ingoing edge.</li>
 				<li><b>Workflow net:</b> Has one place <i>i</i> with no ingoing edges and one place <i>o</i> with no outgoing edges such that for every place/transition <i>n</i>, there is a path from <i>i</i> to <i>o</i> via <i>n</i>.</li>
 				<li><b>Free-choice workflow net:</b> Both a free-choice net and a workflow net.</li>
 			</ul>
+		</div>
+		<div class="flex-col box">
+			<h3>Intermediate Representation (IR)</h3>
+			<p>When encoding a group-choice net, a 2-τ-synchronisation net is generated and can be viewed in the <b>Petri Net (IR)</b>-box. The synchronisation order of the places in the 2-τ-synchronisation is randomized and changes every time the Petri net in the <b>Petri Net (Input)</b>-box (except when places/transitions are just moved around). It is (only) possible to move places/transitions in the <b>Petri Net (IR)</b>-box to get a better looking Petri net since the algorithm for placing the extra places/transitions might not give the best results in terms of readability.</p>
 		</div>
 		<div class="flex-col box">
 			<h3>CCS</h3>

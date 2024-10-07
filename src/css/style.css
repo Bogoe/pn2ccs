@@ -28,9 +28,6 @@ body {
 	font-family: Arial, sans-serif;
 	font-size: 16px;
 	gap: 10px;
-	grid-template-columns: 2fr 1fr;
-	grid-template-rows: auto auto 1fr;
-	height: 100vh;
 	margin: 0;
 	padding: 10px;
 }
@@ -163,21 +160,30 @@ code {
 	word-break: break-word;
 }
 
-.flex-col {
+.flex,
+.flex-col,
+.flex-row {
 	display: flex;
-	flex-direction: column;
 	gap: 10px;
 }
 
+.flex-col {
+	flex-direction: column;
+}
+
 .flex-row {
-	display: flex;
 	flex-direction: row;
-	gap: 10px;
 }
 
 .grid {
 	display: grid;
 	gap: 10px;
+}
+
+.one-line {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 
@@ -205,13 +211,13 @@ text {
 
 
 /* Menu */
-#menu {
-	grid-column: 1 / span 2;
-	grid-row: 1;
-}
-
 #logo {
 	white-space: nowrap;
+}
+
+#logo>span {
+	font-size: .3em;
+	vertical-align: baseline;
 }
 
 #menu>button {
@@ -219,12 +225,22 @@ text {
 }
 
 
-/* Petri net */
+/* Petri nets */
 #pnContainer {
-	grid-column: 1;
-	grid-row: 2 / span 2;
 	grid-template-columns: auto auto 1fr;
-	grid-template-rows: 23.2px 84px 1fr;
+	grid-template-rows: 24px 84px;
+	grid-auto-rows: 1fr;
+	height: calc(200% + 168px);
+}
+
+#pnContainer.collapsed {
+	grid-template-rows: 24px;
+}
+
+#pn2tauContainer {
+	grid-template-columns: 1fr auto;
+	grid-template-rows: 24px;
+	height: calc(200% - 208px);
 }
 
 #pnContainer>h3 {
@@ -233,21 +249,30 @@ text {
 
 #hints {
 	grid-column: 3;
-	grid-row: 1 / span 2;
+	grid-row: 2;
+	height: 84px;
 	list-style-type: "- ";
 	overflow: auto;
 	padding-left: 20px;
 	white-space: nowrap;
 }
 
-#pn {
+#pn,
+#pn2tau {
 	background-color: #dddddd;
-	grid-column: 1 / span 3;
-	height: 100%;
 	width: 100%;
 }
 
-#pn .node {
+#pn {
+	grid-column: 1 / span 3;
+}
+
+#pn2tau {
+	grid-column: 1 / span 2;
+}
+
+#pn .node,
+#pn2tau .node {
 	fill: #dddddd;
 }
 
@@ -259,6 +284,10 @@ text {
 .attr {
 	font-family: 'Times New Roman', serif;
 	font-size: 16px;
+}
+
+.attr:empty+.name {
+	transform: translateY(5px);
 }
 
 .drag-and-drop {
@@ -284,17 +313,32 @@ text {
 	stroke: #000000;
 }
 
+#draggingPlace,
+#draggingTransition {
+	height: 80px;
+	opacity: 0.5;
+	pointer-events: none;
+	position: fixed;
+	width: 80px;
+}
+
+#draggingPlace.hide,
+#draggingTransition.hide {
+	display: none;
+}
+
 
 /* Classification */
 #classesContainer {
-	grid-column: 2;
-	grid-row: 2;
+	grid-template-columns: 1fr auto;
+	grid-template-rows: 24px;
 }
 
 #classes {
 	alignment-baseline: middle;
 	font-family: 'Times New Roman', serif;
 	font-size: 5px;
+	grid-column: 1 / span 2;
 }
 
 #classes>g>rect {
@@ -377,15 +421,15 @@ text {
 
 /* CCS */
 #ccsContainer {
-	grid-column: 2;
-	grid-row: 3;
+	grid-template-columns: 1fr auto;
+	grid-template-rows: 24px;
 }
 
 #ccs {
 	background-color: #dddddd;
 	color: #222222;
 	font-family: 'Consolas', monospace;
-	height: 100%;
+	grid-column: 1 / span 2;
 	margin: 0;
 	overflow: auto;
 	padding: 8px;
@@ -410,6 +454,8 @@ text {
 	max-width: min(600px, calc(100vw - 20px));
 	overflow: auto;
 	position: fixed;
+	top: 50%;
+	transform: translateY(-50%);
 	z-index: 999;
 }
 
@@ -491,12 +537,85 @@ text {
 	display: none;
 }
 
-#noDragAndDrop {
+
+/* Toggle Buttons */
+.toggle-button {
+	margin-left: auto;
+	padding: 2px 4px;
+	width: 60px;
+}
+
+.collapsed {
+	max-height: 46px;
+	min-height: 46px;
+	overflow: hidden;
+}
+
+.collapsed>*:nth-child(n+3) {
 	display: none;
 }
 
-#noDragAndDrop.red {
-	color: red;
-	display: list-item;
-	font-weight: bold;
+.toggle-button:after {
+	content: "Hide";
+}
+
+.collapsed>.toggle-button:after {
+	content: "Show";
+}
+
+
+/* Responsive layout */
+body {
+	grid-template-columns: 1fr;
+	height: auto;
+}
+
+#menu {
+	flex-direction: column;
+}
+
+#leftCol,
+#rightCol {
+	grid-template-rows: auto 1fr;
+	overflow: auto;
+}
+
+#pn,
+#pn2tau,
+#ccs {
+	height: calc(100vh - 240px);
+}
+
+@media only screen and (min-width: 600px) {
+	#menu {
+		flex-direction: row;
+	}
+
+	#logo {
+		align-self: center;
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	body {
+		grid-template-columns: 1fr 400px;
+		grid-template-rows: min-content 1fr;
+		height: 100vh;
+	}
+
+	#menu {
+		grid-column: 1 / span 2;
+		grid-row: 1;
+	}
+
+	#dialog {
+		top: auto;
+		transform: none;
+	}
+
+	#pn,
+	#pn2tau,
+	#ccs {
+		height: 100%;
+	}
 }

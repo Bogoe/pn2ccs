@@ -309,7 +309,7 @@ class PetriNet {
 			for (let i = places.length - 1; i >= done; i--) {
 				const first = Math.floor(i * Math.random());
 				const second = Math.floor((i - 1) * Math.random());
-				order.push(first, first > second ? second : second + 1);
+				order.push(Math.min(first, second), Math.max(first, second + (first <= second)));
 			}
 			places.forEach(place => place.out = []);
 			transitions.forEach(transition => transition.in = []);
@@ -361,7 +361,7 @@ class PetriNet {
 				transitionToReplacement[transition.id] = new Prefix(labelToAction(transition.label), arrayToProcess(outgoingProcesses, Parallel));
 				return;
 			}
-			const name = "s_" + (newActions.length + 1);
+			const name = "s_" + (transition.id + 1);
 			transitionToReplacement[transition.id] = new Prefix(new InputAction(name), arrayToProcess(outgoingProcesses, Parallel));
 			newActions.push(name);
 		});
