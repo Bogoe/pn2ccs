@@ -55,7 +55,7 @@ Besides the examples from the paper, there are some additional advanced examples
 
 \*\*\* The encoding is not exactly as in the paper (but equivalent) since `s_2.X_p1` and `\overline{s_2}.0` are swapped compared to the paper.
 
-## Examples from Upcoming Paper
+## Examples from Second Paper
 - `s01-vending-machine` (free-choice workflow net)
 - `s02-order-to-cash-process` (free-choice workflow net)
 - `s05-sync-patterns` (group-choice net)
