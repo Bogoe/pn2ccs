@@ -67,9 +67,9 @@ Files prefixed with `x` (`xN-xxx.pnml`) are additional advanced examples not inc
 \*\*\* The encoding is not exactly as in the paper (but equivalent) since `s_2.X_p1` and `\overline{s_2}.0` are swapped compared to the paper.
 
 ## Upcoming Paper
-- [`s01-vending-machine`](/examples/pnml/s01-vending-machine.pnml) [[IMG]](/examples/images/s01-vending-machine.pdf) (free-choice workflow net)
-- [`s02-order-to-cash-process`](/examples/pnml/s02-order-to-cash-process.pnml) [[IMG]](/examples/images/s02-order-to-cash-process.pdf) (free-choice workflow net)
-- [`s05-sync-patterns`](/examples/pnml/s05-sync-patterns.pnml) [[IMG]](/examples/images/s05-sync-patterns.pdf) (group-choice net)
+- [`s02-vending-machine`](/examples/pnml/s02-vending-machine.pnml) [[IMG]](/examples/images/s02-vending-machine.pdf) (free-choice workflow net)
+- [`s03-sync-patterns`](/examples/pnml/s03-sync-patterns.pnml) [[IMG]](/examples/images/s03-sync-patterns.pdf) (group-choice net)
+- [`s06-order-to-cash-process`](/examples/pnml/s06-order-to-cash-process.pnml) [[IMG]](/examples/images/s06-order-to-cash-process.pdf) (free-choice workflow net)
 
 ## Extra Petri Nets
 Fairly large models generated using [PLG2](https://andrea.burattin.net/publications/2016-bpm-demo):
@@ -108,8 +108,8 @@ Click on the `Import PN`-button, select a file in the dialog (on your device) an
 7. Notice that the Petri net is no longer a CCS net (or any of the other encodable classes). Add the missing edge from `p1` to `t2` such that it becomes a group-choice net.
 8. The number of tokens in a place can be changed by *right-clicking* on the place similar to how transition labels are changed.
 
-## Brief Step-by-Step Instructions for [`s02-order-to-cash-process`](/examples/pnml/s02-order-to-cash-process.pnml) [[IMG]](/examples/images/s02-order-to-cash-process.pdf)
-1. Drag-and-drop places and transitions onto the empty space in a pattern similar to [`/examples/images/s02-order-to-cash-process.pdf`](/examples/images/s02-order-to-cash-process.pdf). You can move a place/transition by clicking on it to select it (it becomes **bold**) and then drag it to its new position (click on it again to deselect it). You can move the entire Petri net by dragging the background. If you (by mistake) create a wrong place/transition, *right-click* on the place/transition and click `Delete place`/`Delete transition` in the dialog.
+## Brief Step-by-Step Instructions for [`s06-order-to-cash-process`](/examples/pnml/s06-order-to-cash-process.pnml) [[IMG]](/examples/images/s06-order-to-cash-process.pdf)
+1. Drag-and-drop places and transitions onto the empty space in a pattern similar to [`/examples/images/s06-order-to-cash-process.pdf`](/examples/images/s06-order-to-cash-process.pdf). You can move a place/transition by clicking on it to select it (it becomes **bold**) and then drag it to its new position (click on it again to deselect it). You can move the entire Petri net by dragging the background. If you (by mistake) create a wrong place/transition, *right-click* on the place/transition and click `Delete place`/`Delete transition` in the dialog.
 2. Add edges by first clicking on a place and then on a transition, or vice versa. If you (by mistake) make a wrong edge, *right-click* on the edge and click `Delete edge` in the dialog.
 3. *Right-click* on the left most place (likely `p1`) to open a dialog. Enter `1` in the text field and click on `Update place` to set the number of tokens in the place.
 4. *Right-click* each transition and enter their action labels similar to how the number tokens were set.
