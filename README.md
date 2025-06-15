@@ -1,13 +1,13 @@
 # Overview
 PN2CCS is a web application built to be ran in modern web browsers. To run it, simply open the [`src/index.html`](src/index.html) file in a modern web browser with JavaScript enabled (see [Supported Browsers](#supported-browsers)).
 
-The tool allows to input a Petri net (by drawing it using the graphical user interface or importing a P/T net PNML-file). The Petri net will then be classified in terms of the classes known by PN2CCS (see in Fig. 1 in the first paper) and  encoded into a CCS process, if possible. For further details and how to use PN2CCS, then please click on the `Help`-button in the top right corner when you have the tool opened. Eventually review the [How to Reproduce Examples](#how-to-reproduce-examples) for a short introduction.
+The tool allows to input a Petri net (by drawing it using the graphical user interface or importing a P/T net PNML-file). The Petri net will then be classified in terms of the classes known by PN2CCS (see in Fig. 1 in [BBS24]) and  encoded into a CCS process, if possible. For further details and how to use PN2CCS, then please click on the `Help`-button in the top right corner when you have the tool opened. You can also review the [How to Reproduce Examples](#how-to-reproduce-examples) for a short introduction.
 
 In addition, this repository also contains examples, see [Examples](#examples) for further details.
 
 ## Publications
-- Theoretical paper ([10.1007/978-3-031-62697-5_3](https://doi.org/10.1007/978-3-031-62697-5_3))
-- Upcoming paper (work in progress)
+- [BBS24] Bogø, B., Burattin, A., & Scalas, A. (2024). Encoding Petri Nets into CCS. *In Proceedings of the 26th International Conference on Coordination Models and Languages* (Vol. 14676, pp. 38-55). Springer. https://doi.org/10.1007/978-3-031-62697-5_3
+- [BBS??] Upcoming: Bogø, B., Burattin, A., & Scalas, A. PN2CCS: A Tool to Encode Petri Nets into Calculus of Communicating Systems.
 
 
 # Supported Browsers
@@ -33,16 +33,42 @@ The first version number is the *minimum* version that should be supported accor
 [//]: # (https://developer.mozilla.org/en-US/docs/Web/CSS/min)
 
 
+# Petri Net Classification
+The tool contains a (colored) Venn-diagram that shows the supported Petri nets and their relation. The tool can detect and encode the following classes (except general Petri nets):
+
+- <b>Petri net:</b> Bipartite graph (not encodable).
+- <b>Group-choice net:</b> For every pair of places they either have a same post set or disjointed post sets.
+- <b>2-τ-synchronisation net:</b> All transitions have at most 2 ingoing edges - transitions with 2 ingoing edges have label τ.
+- <b>CCS net:</b> All transitions have 1 or 2 ingoing edges - transitions with 2 ingoing edges have label τ.
+- <b>Free-choice net:</b> All places with multiple outgoing edges only have edges to transitions with one ingoing edge.
+- <b>Workflow net:</b> Has one place *i* with no ingoing edges and one place *o* with no outgoing edges such that for every place/transition *n*, there is a path from *i* to *o* via *n*.
+- <b>Free-choice workflow net:</b> Both a free-choice net and a workflow net.
+
+
+# Calculus of Communicating Systems (CCS) Syntax
+<b>Action:</b> <code>a</code>
+<b>Co-action:</b> <code style="text-decoration: overline">a</code>
+<b>Internal action:</b> <code>τ</code>
+<b>Inaction:</b> <code><b>0</b></code>
+<b>Prefix:</b> <code>μ.Q</code>
+<b>Choice:</b> <code>(P + P)</code>
+<b>Parallel:</b> <code>(Q | Q)</code>
+<b>Exponent:</b> <code>Q<sup>n</sup></code>
+<b>Restriction:</b> <code>(νa)Q</code>
+<b>Constant:</b> <code>X</code>
+where <code>a</code> is a visible action, <code>τ</code> is an internal (invisible) action, <code>μ</code> is a (co-)action or internal action, <code>P</code> is a sequential process (inaction, prefix or choice) and <code>Q</code> is a process (sequential process, parallel, exponent, restriction or constant).</p>
+
+
 # Examples
 The directory [`/examples/pnml`](/examples/pnml) contains PNML-files for all examples listed below. The directory [`/examples/images`](/examples/images) contains pdf/image-files for most of the Petri nets.
 
-Files prefixed with a number (`NN-xxx.pnml`) corresponds to Petri nets shown in figures (Fig. `NN`) in the **theoretical paper**. However, note that places and transitions can have different names in the tool (as these cannot be changed in the tool). Furthermore, the encoding might be different (but equivalent) in the tool because the encoding have nondeterministic choices (see line 11-12 in Algorithm 1 in the **theoretical paper**).
+Files prefixed with a number (`NN-xxx.pnml`) corresponds to Petri nets shown in figures (Fig. `NN`) in [BBS24]. However, note that places and transitions can have different names in the tool (as these cannot be changed in the tool). Furthermore, the encoding might be different (but equivalent) in the tool because the encoding have nondeterministic choices (see line 11-12 in Algorithm 1 in [BBS24]).
 
-Files prefixed with `s` (`sNN-xxx.pnml`) corresponds to Petri nets shown in figures (Fig. `NN`) in the **upcoming paper**.
+Files prefixed with `s` (`sNN-xxx.pnml`) corresponds to Petri nets shown in figures (Fig. `NN`) in [BBS??].
 
 Files prefixed with `x` (`xN-xxx.pnml`) are additional advanced examples not included in the papers. These examples only have PNML-files generated by other tools and might not give a good *visual* result for the Petri net in PN2CCS due to missing/bad positions or the fixed sized nodes in PN2CCS. In those cases (except `x7-x9`), please consult the images for a better visualization.
 
-## Theoretical Paper ([10.1007/978-3-031-62697-5_3](https://doi.org/10.1007/978-3-031-62697-5_3))
+## [BBS24] Encoding Petri Nets into CCS ([10.1007/978-3-031-62697-5_3](https://doi.org/10.1007/978-3-031-62697-5_3))
 - [`02-preliminaries-none`](/examples/pnml/02-preliminaries-none.pnml) [[IMG]](/examples/images/02-preliminaries-none.pdf) (group-choice net + CCS net\*)
 - [`03-preliminaries-workflow`](/examples/pnml/03-preliminaries-workflow.pnml) [[IMG]](/examples/images/03-preliminaries-workflow.pdf) (group-choice net + workflow net + CCS net\*)
 - [`04-preliminaries-free-choice`](/examples/pnml/04-preliminaries-free-choice.pnml) [[IMG]](/examples/images/04-preliminaries-free-choice.pdf) (group-choice net + free-choice net + CCS net\*)
@@ -60,13 +86,13 @@ Files prefixed with `x` (`xN-xxx.pnml`) are additional advanced examples not inc
 - [`17-group-choice-before`](/examples/pnml/17-group-choice-before.pnml) [[IMG]](/examples/images/17-group-choice-before.pdf) (group-choice net)
 - [`18-group-choice-after`](/examples/pnml/18-group-choice-after.pnml) [[IMG]](/examples/images/18-group-choice-after.pdf) (free-choice net + 2-τ-synchronisation net)
 
-\* The Petri net in the paper has no labels/actions, so all transitions are labeled with `τ` in the PNML-file - and is therefore a CCS net.
+\* The Petri net in [BBS24] has no labels/actions, so all transitions are labeled with `τ` in the PNML-file - and is therefore a CCS net.
 
-\*\* The encoding in the paper only shows a *partial* encoding of a place/transition used to help understanding Algorithm 1 in the paper while the tool produces a *full* encoding (using Algorithm 6 + Algorithm 4 in the paper).
+\*\* The encoding in [BBS24] only shows a *partial* encoding of a place/transition used to help understanding Algorithm 1 in [BBS24] while the tool produces a *full* encoding (using Algorithm 6 + Algorithm 4 in [BBS24]).
 
-\*\*\* The encoding is not exactly as in the paper (but equivalent) since `s_2.X_p1` and `\overline{s_2}.0` are swapped compared to the paper.
+\*\*\* The encoding is not exactly as in [BBS24] (but equivalent) since `s_2.X_p1` and `\overline{s_2}.0` are swapped compared to [BBS24].
 
-## Upcoming Paper
+## [BBS??] Upcoming
 - [`s02-vending-machine`](/examples/pnml/s02-vending-machine.pnml) [[IMG]](/examples/images/s02-vending-machine.pdf) (free-choice workflow net)
 - [`s03-sync-patterns`](/examples/pnml/s03-sync-patterns.pnml) [[IMG]](/examples/images/s03-sync-patterns.pdf) (group-choice net)
 - [`s06-order-to-cash-process`](/examples/pnml/s06-order-to-cash-process.pnml) [[IMG]](/examples/images/s06-order-to-cash-process.pdf) (free-choice workflow net)
@@ -92,8 +118,8 @@ Petri nets from the official PNML website [pnml.org](https://www.pnml.org/versio
 Below are instructions to reproduce examples. All examples can be imported as a PNML-file and there are step-by-step guides for a few examples.
 
 **Important:** In the following, be aware that:
-- *Click* referrers to using the *primary* mouse button or tapping on the touch screen.
-- *Right-click* referrers to using the *secondary* mouse button or making a long tap on the touch screen.
+- *Click* refers to using the *primary* mouse button or tapping on the touch screen.
+- *Right-click* refers to using the *secondary* mouse button or making a long tap on the touch screen.
 
 ## Importing a PNML-file
 Click on the `Import PN`-button, select a file in the dialog (on your device) and press the `Import Petri net`-button to import the Petri net. It centers the Petri net on the first place or transition. You can drag the Petri net to get a better view of it.
