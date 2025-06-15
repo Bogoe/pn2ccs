@@ -1,4 +1,4 @@
-/* Copyright (C) 2024  Benjamin Bogø
+/* Copyright (C) 2024-2025 Benjamin Bogø
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class InputAction extends Action {
 	}
 
 	toHTML() {
-		return this.name;
+		return this.name.replace(/_(t\d+)$/, "<sub>$1</sub>");
 	}
 }
 
@@ -59,7 +59,7 @@ class CoAction extends Action {
 	}
 
 	toHTML() {
-		return "<span class=\"overline\">" + this.name + "</span>";
+		return "<span class=\"overline\">" + this.name.replace(/_(t\d+)$/, "<sub>$1</sub>") + "</span>";
 	}
 }
 
@@ -225,7 +225,7 @@ class Constant extends Process {
 	constructor(name) {
 		super();
 		if (typeof name !== "string" || !/^[A-Z][a-zA-Z0-9_]*$/.test(name)) {
-			throw new TypeError("Action name must be a string in PascalCase.");
+			throw new TypeError("Constant name must be a string in PascalCase.");
 		}
 		this.name = name;
 	}
@@ -235,7 +235,7 @@ class Constant extends Process {
 	}
 
 	toHTML() {
-		return this.name;
+		return this.name.replace(/_([pt]\d+)$/, "<sub>$1</sub>");
 	}
 }
 
@@ -265,6 +265,6 @@ class CCS {
 	}
 
 	toHTML() {
-		return Object.keys(this.definitions).map(name => name + " := " + this.definitions[name].toHTML()).join("<br>") + "<br><br>" + this.process.toHTML();
+		return Object.keys(this.definitions).map(name => name.replace(/_([pt]\d+)$/, "<sub>$1</sub>") + " := " + this.definitions[name].toHTML()).join("<br>") + "<br><br>" + this.process.toHTML();
 	}
 }

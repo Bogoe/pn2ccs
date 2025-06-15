@@ -4,14 +4,15 @@
 	<title>Petri Net to CCS (PN2CCS)</title>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<link rel="stylesheet" type="text/css" href="css/style.css?v=1.1.2" />
-	<script defer src="js/ccs.js?v=1.1.2"></script>
-	<script defer src="js/pn.js?v=1.1.2"></script>
-	<script defer src="js/gui.js?v=1.1.2"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css?v=1.2" />
+	<link rel="stylesheet" type="text/css" href="css/images.css?v=1.2" />
+	<script defer src="js/ccs.js?v=1.2"></script>
+	<script defer src="js/pn.js?v=1.2"></script>
+	<script defer src="js/gui.js?v=1.2"></script>
 </head>
 <body>
 	<div id="menu" class="flex box">
-		<h1 id="logo">PN2CCS<span>v1.1.2</span></h1>
+		<h1 id="logo">PN2CCS<span>v1.2</span></h1>
 		<button id="buttonReset">Reset</button>
 		<button id="buttonImportPN">Import PN</button>
 		<button id="buttonExportPN">Export PN</button>
@@ -28,8 +29,8 @@
 				<li><b>Select element:</b> Click/tap on element.</li>
 				<li><b>Deselect element:</b> Click/tap on selected element.</li>
 				<li><b>Add edge:</b> Select place/transition -> click/tap on transition/place.</li>
-				<li><b>Change place tokens:</b> Right-click/long tap place -> enter tokens -> click on <button class="inline-button">Update place</button>.</li>
-				<li><b>Change transition label:</b> Right-click/long tap transition -> enter label -> click on <button class="inline-button">Update transition</button>.</li>
+				<li><b>Change place name/tokens:</b> Right-click/long tap place -> enter name/tokens -> click on <button class="inline-button">Update place</button>.</li>
+				<li><b>Change transition name/label:</b> Right-click/long tap transition -> enter name/label -> click on <button class="inline-button">Update transition</button>.</li>
 				<li><b>Delete place:</b> Right-click/long tap place -> click on <button class="inline-button red">Delete place</button>.</li>
 				<li><b>Delete transition:</b> Right-click/long tap transition -> click on <button class="inline-button red">Delete transition</button>.</li>
 				<li><b>Delete edge:</b> Right-click/long tap edge -> click on <button class="inline-button red">Delete edge</button>.</li>
@@ -54,12 +55,12 @@
 					</svg>
 				</div>
 			</div>
-			<svg id="pn"></svg>
+			<svg id="pn" class="petri-net"></svg>
 		</div>
 		<div id="pn2tauContainer" class="grid box collapsed">
 			<h3 class="one-line">Petri Net (<span title="Intermediate Representation">IR</span>)</h3>
 			<button class="toggle-button"></button>
-			<svg id="pn2tau"></svg>
+			<svg id="pn2tau" class="petri-net"></svg>
 		</div>
 	</div>
 	<div id="rightCol" class="grid">
@@ -110,76 +111,77 @@
 		</div>
 		<div class="grid box gif">
 			<h3>Draw Petri Net</h3>
-			<div class="flex-col box">
+			<p>Hover/tab and hold on the images below to see the animated steps.</p>
+			<div id="helpAddPlace" class="flex-col box animation">
 				<p><b>Add Place:</b> Drag-and-drop place onto empty space.</p>
-				<img src="img/add-place.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpAddTransition" class="flex-col box animation">
 				<p><b>Add Transition:</b> Drag-and-drop transition onto empty space.</p>
-				<img src="img/add-transition.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpSelect" class="flex-col box animation">
 				<p><b>Select element:</b> Click/tap on element.</p>
-				<img src="img/select.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpDeselect" class="flex-col box animation">
 				<p><b>Deselect element:</b> Click/tap on selected element.</p>
-				<img src="img/deselect.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpAddEdge" class="flex-col box animation">
 				<p><b>Add edge:</b> Select place/transition -> click/tap on transition/place.</p>
-				<img src="img/add-edge.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
-				<p><b>Change place tokens:</b> Right-click/long tap place -> enter tokens -> click on <button class="inline-button">Update place</button>.</p>
-				<img src="img/change-place-tokens.gif">
+			<div id="helpEditPlace" class="flex-col box animation">
+				<p><b>Change place name/tokens:</b> Right-click/long tap place -> enter name/tokens -> click on <button class="inline-button">Update place</button>.</p>
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
-				<p><b>Change transition label:</b> Right-click/long tap transition -> enter label -> click on <button class="inline-button">Update transition</button>.</p>
-				<img src="img/change-transition-label.gif">
+			<div id="helpEditTranaition" class="flex-col box animation">
+				<p><b>Change transition name/label:</b> Right-click/long tap transition -> enter name/label -> click on <button class="inline-button">Update transition</button>.</p>
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpDeletePlace" class="flex-col box animation">
 				<p><b>Delete place:</b> Right-click/long tap place -> click on <button class="inline-button red">Delete place</button>.</p>
-				<img src="img/delete-place.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpDeleteTransition" class="flex-col box animation">
 				<p><b>Delete transition:</b> Right-click/long tap transition -> click on <button class="inline-button red">Delete transition</button>.</p>
-				<img src="img/delete-transition.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpDeleteEdge" class="flex-col box animation">
 				<p><b>Delete edge:</b> Right-click/long tap edge -> click on <button class="inline-button red">Delete edge</button>.</p>
-				<img src="img/delete-edge.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpMovePetriNet" class="flex-col box animation">
 				<p><b>Move Petri net:</b> Drag anywhere (except selected node).</p>
-				<img src="img/move-pn.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpMoveNode" class="flex-col box animation">
 				<p><b>Move place/transition:</b> Select place/transition -> drag selected place/transition.</p>
-				<img src="img/move-node.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpAddMultiEdge" class="flex-col box animation">
 				<p><b>Add multi-line edge:</b> Select place/transition -> click/tap on empty space (0 or more times) -> click/tap on transition/place.</p>
-				<img src="img/add-multi-edge.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpCancelMultiEdge" class="flex-col box animation">
 				<p><b>Cancel multi-line edge:</b> Click/tap on selected place/transition.</p>
-				<img src="img/cancel-multi-edge.gif">
+				<img src="img/transparent.png">
 			</div>
-			<div class="flex-col box">
+			<div id="helpMoveMultiEdge" class="flex-col box animation">
 				<p><b>Move multi-line edge point:</b> Select multi-line edge point -> drag multi-line edge point.</p>
-				<img src="img/move-multi-edge.gif">
+				<img src="img/transparent.png">
 			</div>
 		</div>
 		<div class="flex-col box">
 			<h3>Import Petri Net (PNML-file)</h3>
-			<p>A PNML-file can be imported using the <button class="inline-button">Import PN</button>-button. The PNML-file must represent a <b>Place/Transition net</b> like in the three examples <a href="https://www.pnml.org/version-2009/version-2009.php">on this page</a>. PNML-files are imported in a loose fashion which means that only the following are checked/used:</p>
+			<p>A PNML-file can be imported using the <button class="inline-button">Import PN</button>-button. The PNML-file must represent a <b>Place/Transition net</b> like in the three examples <a href="https://www.pnml.org/version-2009/version-2009.php">on this page</a> or in <a href="https://www2.compute.dtu.dk/~ekki/publications/copies/PNML-EKA06.pdf">this very easy understandable example (Fig. 5 on page 15 and Listing 1 on page 16)</a>. PNML-files are imported in a loose fashion which means that only the following are checked/used:</p>
 			<ul>
 				<li>The file is valid XML.</li>
 				<li>
 					Each place is represented by a <code>&lt;place&gt;</code>-tag with:
 					<ul>
-						<li>(Required) Unique id in a <code>id</code>-attribute on the <code>&lt;place&gt;</code>-tag.</li>
+						<li>(Required) Unique id in a <code>id</code>-attribute on the <code>&lt;place&gt;</code>-tag. Use <code>pN</code>, where <code>N</code> is a positive integer, to chose the visual name of the place.</li>
 						<li>(Optional) Marking (number of tokens) as the content of a <code>&lt;text&gt;</code>-tag in a <code>&lt;initialMarking&gt;</code>-tag in the <code>&lt;place&gt;</code>-tag. Default: 0 tokens.</li>
 						<li>(Optional) Position of the place as <code>x</code>- and <code>y</code>-attributes on a <code>&lt;position&gt;</code>-tag in a <code>&lt;graphics&gt;</code>-tag in the <code>&lt;place&gt;</code>-tag. Default: A unique position (assuming no elements have positions).</li>
 					</ul>
@@ -187,7 +189,7 @@
 				<li>
 					Each transition is represented by a <code>&lt;transition&gt;</code>-tag with:
 					<ul>
-						<li>(Required) Transition id in a <code>id</code>-attribute on the <code>&lt;transition&gt;</code>-tag.</li>
+						<li>(Required) Transition id in a <code>id</code>-attribute on the <code>&lt;transition&gt;</code>-tag. Use <code>tN</code>, where <code>N</code> is a positive integer, to chose the visual name of the transition.</li>
 						<li>(Optional) Label as the content of a <code>&lt;text&gt;</code>-tag in a <code>&lt;name&gt;</code>-tag in the <code>&lt;transition&gt;</code>-tag. Default: τ.</li>
 						<li>(Optional) Position of the transition as <code>x</code>- and <code>y</code>-attributes on a <code>&lt;position&gt;</code>-tag in a <code>&lt;graphics&gt;</code>-tag in the <code>&lt;transition&gt;</code>-tag. Default: A unique position (assuming no elements have positions).</li>
 					</ul>
@@ -208,7 +210,7 @@
 		</div>
 		<div class="flex-col box">
 			<h3>Classification</h3>
-			<p>Colored boxes (black text) means the Petri net is in that class while grayed out boxes (gray text) means it is <b>not</b> in that class. There are the following classes:</p>
+			<p>Colored boxes (black text) means that the Petri net is in the given class while grayed out boxes (gray text) means that it is <b>not</b> in the given class. There are the following classes:</p>
 			<ul>
 				<li><b>Petri net:</b> Bipartite graph (not encodable).</li>
 				<li><b>Group-choice net:</b> For every pair of places they either have a same post set or disjointed post sets.</li>
@@ -244,12 +246,24 @@
 	<div id="noSupport">
 		<h2>Not Supported</h2>
 		<p>If you see this, then <b>JavaScript is disabled</b> or <b>your browser is not supported (too old)</b> by this tool. You will need to use (or update) one of the following browsers:</p>
+		<h3>Desktop</h3>
 		<ul>
 			<li>Google Chrome 79+</li>
 			<li>Microsoft Edge 79+</li>
 			<li>Mozilla Firefox 75+</li>
-			<li>Opera 67+</li>
+			<li>Opera 66+</li>
 			<li>Safari 14.1+</li>
+		</ul>
+		<h3>Android</h3>
+		<ul>
+			<li>Google Chrome 79+</li>
+			<li>Mozilla Firefox 79+</li>
+			<li>Opera 57+</li>
+			<li>Samsung Internet 12.0+</li>
+		</ul>
+		<h3>iOS (all browsers use the same base browser)</h3>
+		<ul>
+			<li>Safari 14.5+</li>
 		</ul>
 	</div>
 </body>

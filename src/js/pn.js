@@ -1,4 +1,4 @@
-/* Copyright (C) 2024  Benjamin Bogø
+/* Copyright (C) 2024-2025 Benjamin Bogø
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,17 +30,27 @@ class IdObject {
 }
 
 class Node extends IdObject {
+	static AUTO_NAME_ID = 0;
 	static ERROR_PT = "Multiple edges are not allowed from places to transitions.";
 	static ERROR_TP = "Multiple edges are not supported (but weighted edges are supported) from transitions to places.";
+	nameId;
 	in = [];
 	out = [];
 
-	constructor(id) {
+	constructor(id, nameId) {
 		super(id);
 		if (this.constructor === Node) {
 			throw new Error("Node class cannot be instantiated.");
 		}
 		this.setId(id);
+		this.setNameId(nameId);
+	}
+
+	setNameId(nameId) {
+		if (!Number.isInteger(nameId) && nameId > 0) {
+			throw new TypeError("Name id must be a positive integer.");
+		}
+		this.nameId = nameId;
 	}
 
 	addEdge(edge) {
@@ -87,9 +97,13 @@ class Node extends IdObject {
 class Place extends Node {
 	tokens = 0;
 
-	constructor(id, tokens) {
-		super(id);
+	constructor(id, nameId, tokens) {
+		super(id, nameId);
 		this.setTokens(tokens);
+	}
+
+	getName() {
+		return `p${this.nameId}`;
 	}
 
 	setTokens(tokens) {
@@ -103,9 +117,13 @@ class Place extends Node {
 class Transition extends Node {
 	label;
 
-	constructor(id, label) {
-		super(id);
+	constructor(id, nameId, label) {
+		super(id, nameId);
 		this.setLabel(label);
+	}
+
+	getName() {
+		return `t${this.nameId}`;
 	}
 
 	setLabel(label) {
@@ -154,16 +172,26 @@ class PetriNet {
 	places = [];
 	transitions = [];
 	edges = [];
+	placeNames = [true];
+	transitionNames = [true];
 
-	addPlace(tokens) {
-		const place = new Place(this.places.length, tokens);
+	addPlace(nameId, tokens) {
+		if (nameId === Node.AUTO_NAME_ID || this.placeNames[nameId]) {
+			nameId = this.placeNames.length;
+		}
+		const place = new Place(this.places.length, nameId, tokens);
 		this.places.push(place);
+		this.placeNames[nameId] = true;
 		return place;
 	}
 
-	addTransition(label) {
-		const transition = new Transition(this.transitions.length, label);
+	addTransition(nameId, label) {
+		if (nameId === Node.AUTO_NAME_ID || this.transitionNames[nameId]) {
+			nameId = this.transitionNames.length;
+		}
+		const transition = new Transition(this.transitions.length, nameId, label);
 		this.transitions.push(transition);
+		this.transitionNames[nameId] = true;
 		return transition;
 	}
 
@@ -192,6 +220,8 @@ class PetriNet {
 		otherPlace.setId(place.id);
 		this.places[place.id] = otherPlace;
 		this.places.pop();
+		delete this.placeNames[place.nameId];
+		this.placeNames.length = this.placeNames.lastIndexOf(true) + 1;
 	}
 
 	removeTransition(transition) {
@@ -207,6 +237,8 @@ class PetriNet {
 		otherTransition.setId(transition.id);
 		this.transitions[transition.id] = otherTransition;
 		this.transitions.pop();
+		delete this.transitionNames[transition.nameId];
+		this.transitionNames.length = this.transitionNames.lastIndexOf(true) + 1;
 	}
 
 	removeEdge(edge) {
@@ -291,8 +323,8 @@ class PetriNet {
 			throw new Error("Petri net is neither a 2-τ-synchronisation net or group-choice net as required.");
 		}
 		const petriNet = new PetriNet();
-		this.places.forEach(place => petriNet.addPlace(place.tokens));
-		this.transitions.forEach(transition => petriNet.addTransition(transition.label));
+		this.places.forEach(place => petriNet.addPlace(place.nameId, place.tokens));
+		this.transitions.forEach(transition => petriNet.addTransition(transition.nameId, transition.label));
 		this.places.forEach(place => place.out.forEach(edge => petriNet.addEdge(petriNet.places[edge.from.id], petriNet.transitions[edge.to.id], edge.weight)));
 		this.transitions.forEach(transition => transition.out.forEach(edge => petriNet.addEdge(petriNet.transitions[edge.from.id], petriNet.places[edge.to.id], edge.weight)));
 		if (is2TauSynchronisationNet) {
@@ -314,8 +346,8 @@ class PetriNet {
 			places.forEach(place => place.out = []);
 			transitions.forEach(transition => transition.in = []);
 			for (let i = 0; i < order.length; i += 2) {
-				const newTransition = petriNet.addTransition("τ");
-				const newPlace = petriNet.addPlace(0);
+				const newTransition = petriNet.addTransition(Node.AUTO_NAME_ID, "τ");
+				const newPlace = petriNet.addPlace(Node.AUTO_NAME_ID, 0);
 				petriNet.addEdge(places[order[i]], newTransition, 1);
 				petriNet.addEdge(places[order[i + 1]], newTransition, 1);
 				petriNet.addEdge(newTransition, newPlace, 1);
@@ -347,11 +379,11 @@ class PetriNet {
 		const transitionToReplacement = [];
 		const newActions = [];
 		const transitionGeneratorProcesses = [];
-		this.places.forEach((place, i) => placeToProcess[place.id] = new Constant("X_p" + (i + 1)));
-		this.transitions.forEach((transition, i) => {
+		this.places.forEach(place => placeToProcess[place.id] = new Constant("X_" + place.getName()));
+		this.transitions.forEach(transition => {
 			const outgoingProcesses = transition.out.map(edge => edge.weight === 1 ? placeToProcess[edge.to.id] : new Exponent(placeToProcess[edge.to.id], edge.weight));
 			if (transition.in.length === 0) {
-				const name = "X_t" + (i + 1);
+				const name = "X_" + transition.getName();
 				outgoingProcesses.unshift(new Constant(name));
 				definitions[name] = new Prefix(labelToAction(transition.label), arrayToProcess(outgoingProcesses, Parallel));
 				transitionGeneratorProcesses.push(new Constant(name));
@@ -361,19 +393,19 @@ class PetriNet {
 				transitionToReplacement[transition.id] = new Prefix(labelToAction(transition.label), arrayToProcess(outgoingProcesses, Parallel));
 				return;
 			}
-			const name = "s_" + (transition.id + 1);
+			const name = "s_" + transition.getName();
 			transitionToReplacement[transition.id] = new Prefix(new InputAction(name), arrayToProcess(outgoingProcesses, Parallel));
 			newActions.push(name);
 		});
-		this.places.forEach((place, i) => {
+		this.places.forEach(place => {
 			const choices = place.out.map(edge => {
 				const replacement = transitionToReplacement[edge.to.id];
-				if (replacement.action instanceof InputAction && /^s_\d+$/.test(replacement.action.name)) {
+				if (replacement.action instanceof InputAction && /^s_t\d+$/.test(replacement.action.name)) {
 					transitionToReplacement[edge.to.id] = new Prefix(new CoAction(replacement.action.name), new Inaction());
 				}
 				return replacement;
 			});
-			definitions["X_p" + (i + 1)] = arrayToProcess(choices, Choice);
+			definitions["X_" + place.getName()] = arrayToProcess(choices, Choice);
 		});
 		const placeProcesses = this.places.filter(place => place.tokens).map(place => place.tokens === 1 ? placeToProcess[place.id] : new Exponent(placeToProcess[place.id], place.tokens)).concat(transitionGeneratorProcesses);
 		const initialProcess = newActions.sort().reduce((process, name) => new Restriction(new InputAction(name), process), arrayToProcess(placeProcesses, Parallel));

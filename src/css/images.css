@@ -1,0 +1,433 @@
+/* Copyright (C) 2024-2025 Benjamin Bogø
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* Help image animations */
+.animation img {
+	animation: step-end infinite both paused;
+}
+
+.animation img:active,
+.animation img:hover {
+	animation-play-state: running;
+}
+
+#helpAddPlace img {
+	animation-duration: 3.5s;
+	animation-name: add-place;
+}
+
+@keyframes add-place {
+	0% {
+		background-image: url('../img/01-add-place/1.jpg');
+	}
+	28.57% {
+		background-image: url('../img/01-add-place/2.jpg'), url('../img/01-add-place/1.jpg');
+	}
+	42.85% {
+		background-image: url('../img/01-add-place/3.jpg'), url('../img/01-add-place/2.jpg');
+	}
+	57.14% {
+		background-image: url('../img/01-add-place/4.jpg'), url('../img/01-add-place/3.jpg');
+	}
+	71.42% {
+		background-image: url('../img/01-add-place/5.jpg'), url('../img/01-add-place/4.jpg');
+	}
+	100% {
+		background-image: url('../img/01-add-place/5.jpg');
+	}
+}
+
+#helpAddTransition img {
+	animation-duration: 3.5s;
+	animation-name: add-transition;
+}
+
+@keyframes add-transition {
+	0% {
+		background-image: url('../img/02-add-transition/1.jpg');
+	}
+	28.57% {
+		background-image: url('../img/02-add-transition/2.jpg'), url('../img/02-add-transition/1.jpg');
+	}
+	42.85% {
+		background-image: url('../img/02-add-transition/3.jpg'), url('../img/02-add-transition/2.jpg');
+	}
+	57.14% {
+		background-image: url('../img/02-add-transition/4.jpg'), url('../img/02-add-transition/3.jpg');
+	}
+	71.42% {
+		background-image: url('../img/02-add-transition/5.jpg'), url('../img/02-add-transition/4.jpg');
+	}
+	100% {
+		background-image: url('../img/02-add-transition/5.jpg');
+	}
+}
+
+#helpSelect img {
+	animation-duration: 3.5s;
+	animation-name: select;
+}
+
+@keyframes select {
+	0% {
+		background-image: url('../img/03-select/1.jpg');
+	}
+	33.33% {
+		background-image: url('../img/03-select/2.jpg'), url('../img/03-select/1.jpg');
+	}
+	50% {
+		background-image: url('../img/03-select/3.jpg'), url('../img/03-select/2.jpg');
+	}
+	66.67% {
+		background-image: url('../img/03-select/4.jpg'), url('../img/03-select/3.jpg');
+	}
+	100% {
+		background-image: url('../img/03-select/4.jpg');
+	}
+}
+
+#helpDeselect img {
+	animation-duration: 3s;
+	animation-name: deselect;
+}
+
+@keyframes deselect {
+	0% {
+		background-image: url('../img/04-deselect/1.jpg');
+	}
+	33.33% {
+		background-image: url('../img/04-deselect/2.jpg'), url('../img/04-deselect/1.jpg');
+	}
+	50% {
+		background-image: url('../img/04-deselect/3.jpg'), url('../img/04-deselect/2.jpg');
+	}
+	66.67% {
+		background-image: url('../img/04-deselect/4.jpg'), url('../img/04-deselect/3.jpg');
+	}
+	100% {
+		background-image: url('../img/04-deselect/4.jpg');
+	}
+}
+
+#helpAddEdge img {
+	animation-duration: 3.5s;
+	animation-name: add-edge;
+}
+
+@keyframes add-edge {
+	0% {
+		background-image: url('../img/05-add-edge/1.jpg');
+	}
+	28.57% {
+		background-image: url('../img/05-add-edge/2.jpg'), url('../img/05-add-edge/1.jpg');
+	}
+	42.85% {
+		background-image: url('../img/05-add-edge/3.jpg'), url('../img/05-add-edge/2.jpg');
+	}
+	57.14% {
+		background-image: url('../img/05-add-edge/4.jpg'), url('../img/05-add-edge/3.jpg');
+	}
+	71.42% {
+		background-image: url('../img/05-add-edge/5.jpg'), url('../img/05-add-edge/4.jpg');
+	}
+	100% {
+		background-image: url('../img/05-add-edge/5.jpg');
+	}
+}
+
+#helpEditPlace img {
+	animation-duration: 5s;
+	animation-name: edit-place;
+}
+
+@keyframes edit-place {
+	0% {
+		background-image: url('../img/06-edit-place/1.jpg');
+	}
+	20% {
+		background-image: url('../img/06-edit-place/2.jpg'), url('../img/06-edit-place/1.jpg');
+	}
+	30% {
+		background-image: url('../img/06-edit-place/3.jpg'), url('../img/06-edit-place/2.jpg');
+	}
+	40% {
+		background-image: url('../img/06-edit-place/4.jpg'), url('../img/06-edit-place/3.jpg');
+	}
+	50% {
+		background-image: url('../img/06-edit-place/5.jpg'), url('../img/06-edit-place/4.jpg');
+	}
+	60% {
+		background-image: url('../img/06-edit-place/6.jpg'), url('../img/06-edit-place/5.jpg');
+	}
+	70% {
+		background-image: url('../img/06-edit-place/7.jpg'), url('../img/06-edit-place/6.jpg');
+	}
+	80% {
+		background-image: url('../img/06-edit-place/8.jpg'), url('../img/06-edit-place/7.jpg');
+	}
+	100% {
+		background-image: url('../img/06-edit-place/8.jpg');
+	}
+}
+
+#helpEditTranaition img {
+	animation-duration: 5s;
+	animation-name: edit-transition;
+}
+
+@keyframes edit-transition {
+	0% {
+		background-image: url('../img/07-edit-transition/1.jpg');
+	}
+	20% {
+		background-image: url('../img/07-edit-transition/2.jpg'), url('../img/07-edit-transition/1.jpg');
+	}
+	30% {
+		background-image: url('../img/07-edit-transition/3.jpg'), url('../img/07-edit-transition/2.jpg');
+	}
+	40% {
+		background-image: url('../img/07-edit-transition/4.jpg'), url('../img/07-edit-transition/3.jpg');
+	}
+	50% {
+		background-image: url('../img/07-edit-transition/5.jpg'), url('../img/07-edit-transition/4.jpg');
+	}
+	60% {
+		background-image: url('../img/07-edit-transition/6.jpg'), url('../img/07-edit-transition/5.jpg');
+	}
+	70% {
+		background-image: url('../img/07-edit-transition/7.jpg'), url('../img/07-edit-transition/6.jpg');
+	}
+	80% {
+		background-image: url('../img/07-edit-transition/8.jpg'), url('../img/07-edit-transition/7.jpg');
+	}
+	100% {
+		background-image: url('../img/07-edit-transition/8.jpg');
+	}
+}
+
+#helpDeletePlace img {
+	animation-duration: 3s;
+	animation-name: delete-place;
+}
+
+@keyframes delete-place {
+	0% {
+		background-image: url('../img/08-delete-place/1.jpg');
+	}
+	33.33% {
+		background-image: url('../img/08-delete-place/2.jpg'), url('../img/08-delete-place/1.jpg');
+	}
+	50% {
+		background-image: url('../img/08-delete-place/3.jpg'), url('../img/08-delete-place/2.jpg');
+	}
+	66.67% {
+		background-image: url('../img/08-delete-place/4.jpg'), url('../img/08-delete-place/3.jpg');
+	}
+	100% {
+		background-image: url('../img/08-delete-place/4.jpg');
+	}
+}
+
+#helpDeleteTransition img {
+	animation-duration: 3s;
+	animation-name: delete-transition;
+}
+
+@keyframes delete-transition {
+	0% {
+		background-image: url('../img/09-delete-transition/1.jpg');
+	}
+	33.33% {
+		background-image: url('../img/09-delete-transition/2.jpg'), url('../img/09-delete-transition/1.jpg');
+	}
+	50% {
+		background-image: url('../img/09-delete-transition/3.jpg'), url('../img/09-delete-transition/2.jpg');
+	}
+	66.67% {
+		background-image: url('../img/09-delete-transition/4.jpg'), url('../img/09-delete-transition/3.jpg');
+	}
+	100% {
+		background-image: url('../img/09-delete-transition/4.jpg');
+	}
+}
+
+#helpDeleteEdge img {
+	animation-duration: 3s;
+	animation-name: delete-edge;
+}
+
+@keyframes delete-edge {
+	0% {
+		background-image: url('../img/10-delete-edge/1.jpg');
+	}
+	33.33% {
+		background-image: url('../img/10-delete-edge/2.jpg'), url('../img/10-delete-edge/1.jpg');
+	}
+	50% {
+		background-image: url('../img/10-delete-edge/3.jpg'), url('../img/10-delete-edge/2.jpg');
+	}
+	66.67% {
+		background-image: url('../img/10-delete-edge/4.jpg'), url('../img/10-delete-edge/3.jpg');
+	}
+	100% {
+		background-image: url('../img/10-delete-edge/4.jpg');
+	}
+}
+
+#helpMovePetriNet img {
+	animation-duration: 3.5s;
+	animation-name: move-petri-net;
+}
+
+@keyframes move-petri-net {
+	0% {
+		background-image: url('../img/11-move-petri-net/1.jpg');
+	}
+	28.57% {
+		background-image: url('../img/11-move-petri-net/2.jpg'), url('../img/11-move-petri-net/1.jpg');
+	}
+	42.85% {
+		background-image: url('../img/11-move-petri-net/3.jpg'), url('../img/11-move-petri-net/2.jpg');
+	}
+	57.14% {
+		background-image: url('../img/11-move-petri-net/4.jpg'), url('../img/11-move-petri-net/3.jpg');
+	}
+	71.42% {
+		background-image: url('../img/11-move-petri-net/5.jpg'), url('../img/11-move-petri-net/4.jpg');
+	}
+	100% {
+		background-image: url('../img/11-move-petri-net/5.jpg');
+	}
+}
+
+#helpMoveNode img {
+	animation-duration: 3.5s;
+	animation-name: move-node;
+}
+
+@keyframes move-node {
+	0% {
+		background-image: url('../img/12-move-node/1.jpg');
+	}
+	28.57% {
+		background-image: url('../img/12-move-node/2.jpg'), url('../img/12-move-node/1.jpg');
+	}
+	42.85% {
+		background-image: url('../img/12-move-node/3.jpg'), url('../img/12-move-node/2.jpg');
+	}
+	57.14% {
+		background-image: url('../img/12-move-node/4.jpg'), url('../img/12-move-node/3.jpg');
+	}
+	71.42% {
+		background-image: url('../img/12-move-node/5.jpg'), url('../img/12-move-node/4.jpg');
+	}
+	100% {
+		background-image: url('../img/12-move-node/5.jpg');
+	}
+}
+
+#helpAddMultiEdge img {
+	animation-duration: 5s;
+	animation-name: add-multi-edge;
+}
+
+@keyframes add-multi-edge {
+	0% {
+		background-image: url('../img/13-add-multi-edge/1.jpg');
+	}
+	20% {
+		background-image: url('../img/13-add-multi-edge/2.jpg'), url('../img/13-add-multi-edge/1.jpg');
+	}
+	30% {
+		background-image: url('../img/13-add-multi-edge/3.jpg'), url('../img/13-add-multi-edge/2.jpg');
+	}
+	40% {
+		background-image: url('../img/13-add-multi-edge/4.jpg'), url('../img/13-add-multi-edge/3.jpg');
+	}
+	50% {
+		background-image: url('../img/13-add-multi-edge/5.jpg'), url('../img/13-add-multi-edge/4.jpg');
+	}
+	60% {
+		background-image: url('../img/13-add-multi-edge/6.jpg'), url('../img/13-add-multi-edge/5.jpg');
+	}
+	70% {
+		background-image: url('../img/13-add-multi-edge/7.jpg'), url('../img/13-add-multi-edge/6.jpg');
+	}
+	80% {
+		background-image: url('../img/13-add-multi-edge/8.jpg'), url('../img/13-add-multi-edge/7.jpg');
+	}
+	100% {
+		background-image: url('../img/13-add-multi-edge/8.jpg');
+	}
+}
+
+#helpCancelMultiEdge img {
+	animation-duration: 4s;
+	animation-name: cancel-multi-edge;
+}
+
+@keyframes cancel-multi-edge {
+	0% {
+		background-image: url('../img/14-cancel-multi-edge/1.jpg');
+	}
+	25% {
+		background-image: url('../img/14-cancel-multi-edge/2.jpg'), url('../img/14-cancel-multi-edge/1.jpg');
+	}
+	37.5% {
+		background-image: url('../img/14-cancel-multi-edge/3.jpg'), url('../img/14-cancel-multi-edge/2.jpg');
+	}
+	50% {
+		background-image: url('../img/14-cancel-multi-edge/4.jpg'), url('../img/14-cancel-multi-edge/3.jpg');
+	}
+	62.5% {
+		background-image: url('../img/14-cancel-multi-edge/5.jpg'), url('../img/14-cancel-multi-edge/4.jpg');
+	}
+	75% {
+		background-image: url('../img/14-cancel-multi-edge/6.jpg'), url('../img/14-cancel-multi-edge/5.jpg');
+	}
+	100% {
+		background-image: url('../img/14-cancel-multi-edge/6.jpg');
+	}
+}
+
+#helpMoveMultiEdge img {
+	animation-duration: 4s;
+	animation-name: move-multi-edge;
+}
+
+@keyframes move-multi-edge {
+	0% {
+		background-image: url('../img/15-move-multi-edge/1.jpg');
+	}
+	25% {
+		background-image: url('../img/15-move-multi-edge/2.jpg'), url('../img/15-move-multi-edge/1.jpg');
+	}
+	37.5% {
+		background-image: url('../img/15-move-multi-edge/3.jpg'), url('../img/15-move-multi-edge/2.jpg');
+	}
+	50% {
+		background-image: url('../img/15-move-multi-edge/4.jpg'), url('../img/15-move-multi-edge/3.jpg');
+	}
+	62.5% {
+		background-image: url('../img/15-move-multi-edge/5.jpg'), url('../img/15-move-multi-edge/4.jpg');
+	}
+	75% {
+		background-image: url('../img/15-move-multi-edge/6.jpg'), url('../img/15-move-multi-edge/5.jpg');
+	}
+	100% {
+		background-image: url('../img/15-move-multi-edge/6.jpg');
+	}
+}

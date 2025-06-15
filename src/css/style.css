@@ -1,4 +1,4 @@
-/* Copyright (C) 2024  Benjamin Bogø
+/* Copyright (C) 2024-2025 Benjamin Bogø
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,12 +257,6 @@ text {
 	white-space: nowrap;
 }
 
-#pn,
-#pn2tau {
-	background-color: #dddddd;
-	width: 100%;
-}
-
 #pn {
 	grid-column: 1 / span 3;
 }
@@ -271,9 +265,20 @@ text {
 	grid-column: 1 / span 2;
 }
 
-#pn .node,
-#pn2tau .node {
+.petri-net {
+	background-color: #dddddd;
+	cursor: move;
+	width: 100%;
+}
+
+.petri-net .node {
 	fill: #dddddd;
+}
+
+.petri-net .node,
+.petri-net .edge,
+.petri-net .point {
+	cursor: pointer;
 }
 
 .name {
@@ -311,6 +316,13 @@ text {
 .selected .point {
 	stroke-width: 2px;
 	stroke: #000000;
+}
+
+#dragPlace .node,
+#dragTransition .node,
+.petri-net .selected .node,
+.petri-net .selected .point {
+	cursor: grab;
 }
 
 #draggingPlace,
@@ -435,9 +447,13 @@ text {
 	padding: 8px;
 }
 
+#ccs sub {
+	font-size: .95em;
+}
+
 .overline {
+	border-top: 1px solid;
 	color: #888888;
-	text-decoration: overline;
 }
 
 
@@ -491,11 +507,11 @@ text {
 	box-shadow: 0 0 0 50vmax #00000066;
 	display: none;
 	justify-self: center;
-	margin: -10px !important;
-	max-height: calc(100vh - 20px);
-	max-width: calc(100vw - 20px);
+	max-height: 100vh;
 	overflow: auto;
 	position: fixed;
+	top: 50%;
+	transform: translateY(-50%);
 	z-index: 1000;
 }
 
@@ -511,11 +527,13 @@ text {
 	grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
 }
 
-.gif>h3 {
+.gif>h3,
+.gif>p {
 	grid-column: 1 / -1;
 }
 
 .gif img {
+	background-size: contain;
 	margin-top: auto;
 }
 
@@ -617,5 +635,13 @@ body {
 	#pn2tau,
 	#ccs {
 		height: 100%;
+	}
+
+	#help {
+		margin: -10px !important;
+		max-height: calc(100vh - 20px);
+		max-width: calc(100vw - 20px);
+		top: auto;
+		transform: none;
 	}
 }

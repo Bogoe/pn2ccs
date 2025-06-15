@@ -1,4 +1,4 @@
-/* Copyright (C) 2024  Benjamin Bogø
+/* Copyright (C) 2024-2025 Benjamin Bogø
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,8 @@ class GuiPlace extends Place {
 	y;
 	element;
 
-	constructor(id, tokens, x, y) {
-		super(id, tokens);
+	constructor(id, nameId, tokens, x, y) {
+		super(id, nameId, tokens);
 		this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
 		this.element.model = this;
 		this.element.innerHTML = `
@@ -29,13 +29,6 @@ class GuiPlace extends Place {
 			<text class="name" x="0" y="-5">${this.getName()}</text>
 		`;
 		this.setXY(x, y);
-	}
-
-	setId(id) {
-		super.setId(id);
-		if (this.element) {
-			this.element.children[2].innerHTML = this.getName();
-		}
 	}
 
 	setTokens(tokens) {
@@ -56,8 +49,11 @@ class GuiPlace extends Place {
 		this.in.forEach(edge => edge.updatePoint(edge.line.points.length - 1, x, y));
 	}
 
-	getName() {
-		return `p${this.id + 1}`;
+	setNameId(nameId) {
+		super.setNameId(nameId);
+		if (this.element) {
+			this.element.children[2].innerHTML = this.getName();
+		}
 	}
 }
 
@@ -66,8 +62,8 @@ class GuiTransition extends Transition {
 	y;
 	element;
 
-	constructor(id, label, x, y) {
-		super(id, label);
+	constructor(id, nameId, label, x, y) {
+		super(id, nameId, label);
 		this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
 		this.element.model = this;
 		this.element.innerHTML = `
@@ -76,13 +72,6 @@ class GuiTransition extends Transition {
 			<text class="attr" x="0" y="15">${this.label}</text>
 		`;
 		this.setXY(x, y);
-	}
-
-	setId(id) {
-		super.setId(id);
-		if (this.element) {
-			this.element.children[1].innerHTML = this.getName();
-		}
 	}
 
 	setLabel(label) {
@@ -103,8 +92,11 @@ class GuiTransition extends Transition {
 		this.in.forEach(edge => edge.updatePoint(edge.line.points.length - 1, x, y));
 	}
 
-	getName() {
-		return `t${this.id + 1}`;
+	setNameId(nameId) {
+		super.setNameId(nameId);
+		if (this.element) {
+			this.element.children[1].innerHTML = this.getName();
+		}
 	}
 }
 
@@ -299,17 +291,25 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
-	addPlace(tokens, x, y) {
-		const place = new GuiPlace(this.places.length, tokens, x, y);
+	addPlace(nameId, tokens, x, y) {
+		if (nameId === Node.AUTO_NAME_ID || this.placeNames[nameId]) {
+			nameId = this.placeNames.length;
+		}
+		const place = new GuiPlace(this.places.length, nameId, tokens, x, y);
 		this.places.push(place);
+		this.placeNames[nameId] = true;
 		this.nodes.appendChild(place.element);
 		this.update();
 		return place;
 	}
 
-	addTransition(label, x, y) {
-		const transition = new GuiTransition(this.transitions.length, label, x, y);
+	addTransition(nameId, label, x, y) {
+		if (nameId === Node.AUTO_NAME_ID || this.transitionNames[nameId]) {
+			nameId = this.transitionNames.length;
+		}
+		const transition = new GuiTransition(this.transitions.length, nameId, label, x, y);
 		this.transitions.push(transition);
+		this.transitionNames[nameId] = true;
 		this.nodes.appendChild(transition.element);
 		this.update();
 		return transition;
@@ -352,6 +352,8 @@ class GuiPetriNet extends PetriNet {
 		otherPlace.setId(place.id);
 		this.places[place.id] = otherPlace;
 		this.places.pop();
+		delete this.placeNames[place.nameId];
+		this.placeNames.length = this.placeNames.lastIndexOf(true) + 1;
 		this.nodes.removeChild(place.element);
 		this.update();
 	}
@@ -369,6 +371,8 @@ class GuiPetriNet extends PetriNet {
 		otherTransition.setId(transition.id);
 		this.transitions[transition.id] = otherTransition;
 		this.transitions.pop();
+		delete this.transitionNames[transition.nameId];
+		this.transitionNames.length = this.transitionNames.lastIndexOf(true) + 1;
 		this.nodes.removeChild(transition.element);
 		this.update();
 	}
@@ -390,15 +394,23 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
-	updatePlace(placeId, tokens) {
+	updatePlace(placeId, nameId, tokens) {
 		const place = this.places[placeId];
+		delete this.placeNames[place.nameId];
+		place.setNameId(nameId);
 		place.setTokens(tokens);
+		this.placeNames[place.nameId] = true;
+		this.placeNames.length = this.placeNames.lastIndexOf(true) + 1;
 		this.update();
 	}
 
-	updateTransition(transitionId, label) {
+	updateTransition(transitionId, nameId, label) {
 		const transition = this.transitions[transitionId];
+		delete this.transitionNames[transition.nameId];
+		transition.setNameId(nameId);
 		transition.setLabel(label);
+		this.transitionNames[transition.nameId] = true;
+		this.transitionNames.length = this.transitionNames.lastIndexOf(true) + 1;
 		this.update();
 	}
 
@@ -434,6 +446,8 @@ class GuiPetriNet extends PetriNet {
 		this.edges = [];
 		this.nodes.innerHTML = "";
 		this.arcs.innerHTML = "";
+		this.placeNames = [true];
+		this.transitionNames = [true];
 		this.onResize();
 		this.isBatch = false;
 		this.update();
@@ -448,8 +462,8 @@ class GuiPetriNet extends PetriNet {
 		if (!is2TauSynchronisationNet && !petriNet.isGroupChoiceNet()) {
 			return false;
 		}
-		petriNet.places.forEach(place => this.addPlace(place.tokens, place.x, place.y));
-		petriNet.transitions.forEach(transition => this.addTransition(transition.label, transition.x, transition.y));
+		petriNet.places.forEach(place => this.addPlace(place.nameId, place.tokens, place.x, place.y));
+		petriNet.transitions.forEach(transition => this.addTransition(transition.nameId, transition.label, transition.x, transition.y));
 		petriNet.places.forEach(place => place.out.forEach(edge => this.addEdge(this.places[edge.from.id], this.transitions[edge.to.id], edge.weight, Array.from(edge.line.points))));
 		petriNet.transitions.forEach(transition => transition.out.forEach(edge => this.addEdge(this.transitions[edge.from.id], this.places[edge.to.id], edge.weight, Array.from(edge.line.points))));
 		if (is2TauSynchronisationNet) {
@@ -497,8 +511,8 @@ class GuiPetriNet extends PetriNet {
 				if (nodeIndex > 0 && layers[(i - 2) >>> 1] != layers[i >>> 1]) {
 					nodeIndex = 0;
 				}
-				const newTransition = this.addTransition("τ", xCut + 20 + layers[i >>> 1] * 210, yMid + 30 + nodeIndex * 70);
-				const newPlace = this.addPlace(0, newTransition.x + 105, newTransition.y);
+				const newTransition = this.addTransition(Node.AUTO_NAME_ID, "τ", xCut + 20 + layers[i >>> 1] * 210, yMid + 30 + nodeIndex * 70);
+				const newPlace = this.addPlace(Node.AUTO_NAME_ID, 0, newTransition.x + 105, newTransition.y);
 				this.addDirectEdge(places[order[i]], newTransition, 1);
 				this.addDirectEdge(places[order[i + 1]], newTransition, 1);
 				this.addDirectEdge(newTransition, newPlace, 1);
@@ -539,7 +553,8 @@ class GuiPetriNet extends PetriNet {
 				const position = place.querySelector("graphics>position");
 				const x = position && position.hasAttribute("x") ? Math.round(+position.getAttribute("x") / 10) * 10 || 40 : 40;
 				const y = position && position.hasAttribute("y") ? Math.round(+position.getAttribute("y") / 10) * 10 || 40 + 80 * index : 40 + 80 * index;
-				nodes[place.id] = this.addPlace(tokens, x, y);
+				const nameId = /^p[1-9]\d*$/.test(place.id) ? +place.id.slice(1) : Node.AUTO_NAME_ID;
+				nodes[place.id] = this.addPlace(nameId, tokens, x, y);
 			});
 			xml.querySelectorAll("net>transition, page>transition").forEach((transition, index) => {
 				if (!transition.id) {
@@ -553,7 +568,8 @@ class GuiPetriNet extends PetriNet {
 				const position = transition.querySelector("graphics>position");
 				const x = position && position.hasAttribute("x") ? Math.round(+position.getAttribute("x") / 10) * 10 || 200 : 200;
 				const y = position && position.hasAttribute("y") ? Math.round(+position.getAttribute("y") / 10) * 10 || 40 + 80 * index : 40 + 80 * index;
-				nodes[transition.id] = this.addTransition(label, x, y);
+				const nameId = /^t[1-9]\d*$/.test(transition.id) ? +transition.id.slice(1) : Node.AUTO_NAME_ID;
+				nodes[transition.id] = this.addTransition(nameId, label, x, y);
 			});
 			xml.querySelectorAll("net>arc, page>arc").forEach(edge => {
 				const sourceId = edge.getAttribute("source");
@@ -591,13 +607,13 @@ class GuiPetriNet extends PetriNet {
 	export(name) {
 		return `
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+  <net id="n1" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <name>
      <text>${name}</text>
     </name>
-    <page id="cId2">
-      ${this.places.map((place, index) => `
-      <place id="cId${index + 3}">
+    <page id="top-level">
+      ${this.places.map(place => `
+      <place id="${place.getName()}">
         <name>
           <text>${place.getName()}</text>
         </name>
@@ -609,8 +625,8 @@ class GuiPetriNet extends PetriNet {
         </initialMarking>
       </place>
       `).join("")}
-      ${this.transitions.map((transition, index) => `
-      <transition id="cId${this.places.length + index + 3}">
+      ${this.transitions.map(transition => `
+      <transition id="${transition.getName()}">
         <name>
           <text>${transition.label}</text>
         </name>
@@ -620,7 +636,7 @@ class GuiPetriNet extends PetriNet {
       </transition>
       `).join("")}
       ${this.edges.map((edge, index) => `
-      <arc id="cId${this.places.length + this.transitions.length + index + 3}" source="cId${(edge.from instanceof GuiTransition ? this.places.length : 0) + edge.from.id + 3}" target="cId${(edge.to instanceof GuiTransition ? this.places.length : 0) + edge.to.id + 3}"></arc>
+      <arc id="e${index}" source="${edge.from.getName()}" target="${edge.to.getName()}"></arc>
       `).join("")}
     </page>
   </net>
@@ -671,7 +687,7 @@ class GuiPetriNet extends PetriNet {
 		const areaY = isDrop ? event.offsetY : event.clientY - bounds.y;
 		const x = Math.round((this.viewX + areaX + (40 - parts[2])) / 10) * 10;
 		const y = Math.round((this.viewY + areaY + (40 - parts[3])) / 10) * 10;
-		isPlace ? this.addPlace(0, x, y) : this.addTransition("τ", x, y);
+		isPlace ? this.addPlace(Node.AUTO_NAME_ID, 0, x, y) : this.addTransition(Node.AUTO_NAME_ID, "τ", x, y);
 		this.setSelectedElement(null);
 	}
 
@@ -1106,8 +1122,10 @@ class GuiDialog {
 			<button name="import" data-valid disabled>Import Petri net</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitImportPN.bind(this));
-		this.content.querySelector("input[name=\"file\"]").addEventListener("input", this.onInput.bind(this));
+		const fileInput = this.content.querySelector("input[name=\"file\"]");
+		fileInput.addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
+		fileInput.focus();
 	}
 
 	async onSubmitImportPN(event) {
@@ -1132,7 +1150,7 @@ class GuiDialog {
 		this.content.innerHTML = `
 			<label>
 				Name of Petri net (characters, digits, dashes and underscores are allowed):
-				<input name="name" type="text" pattern="^([a-zA-Z]([a-zA-Z0-9_\\-]*[a-zA-Z0-9])?)$" required placeholder="my-petri-net" />
+				<input name="name" type="text" pattern="^([a-zA-Z0-9]([a-zA-Z0-9_\\-]*[a-zA-Z0-9])?)$" required placeholder="my-petri-net" />
 			</label>
 			<i>Note: All points on edges will be lost.</i>
 		`;
@@ -1140,8 +1158,11 @@ class GuiDialog {
 			<button name="export" data-valid disabled>Export Petri net</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitExportPN.bind(this));
-		this.content.querySelector("input[name=\"name\"]").addEventListener("input", this.onInput.bind(this));
+		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
+		nameInput.focus();
+		nameInput.select();
 	}
 
 	onSubmitExportPN(event) {
@@ -1161,15 +1182,18 @@ class GuiDialog {
 		this.content.innerHTML = `
 			<label>
 				Name of Petri net (characters, digits, dashes and underscores are allowed):
-				<input name="name" type="text" pattern="^([a-zA-Z]([a-zA-Z0-9_\\-]*[a-zA-Z0-9])?)$" required placeholder="my-petri-net" />
+				<input name="name" type="text" pattern="^([a-zA-Z0-9]([a-zA-Z0-9_\\-]*[a-zA-Z0-9])?)$" required placeholder="my-petri-net" />
 			</label>
 		`;
 		this.buttons.innerHTML = `
 			<button name="export" data-valid disabled>Export CCS</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitExportCCS.bind(this));
-		this.content.querySelector("input[name=\"name\"]").addEventListener("input", this.onInput.bind(this));
+		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
+		nameInput.focus();
+		nameInput.select();
 	}
 
 	onSubmitExportCCS(event) {
@@ -1189,6 +1213,10 @@ class GuiDialog {
 		this.content.innerHTML = `
 			<input type="hidden" name="id" value="${place.id}" />
 			<label>
+				Change name of ${place.getName()}:
+				<input name="name" type="text" pattern="^p[1-9]\\d*$" value="${place.getName()}" placeholder="${place.getName()}" required />
+			</label>
+			<label>
 				Number of tokens for ${place.getName()}:
 				<input name="tokens" type="number" min="0" max="99" step="1" value="${place.tokens}" required />
 			</label>
@@ -1198,15 +1226,23 @@ class GuiDialog {
 			<button name="delete" class="red">Delete place</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitEditPlace.bind(this));
+		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.content.querySelector("input[name=\"tokens\"]").addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
+		nameInput.focus();
+		nameInput.select();
 	}
 
 	onSubmitEditPlace(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
 		if (event.submitter.name === "edit") {
-			this.gui.updatePlace(+this.container.elements.id.value, +this.container.elements.tokens.value);
+			this.gui.updatePlace(
+				+this.container.elements.id.value,
+				+this.container.elements.name.value.slice(1),
+				+this.container.elements.tokens.value,
+			);
 		} else if (event.submitter.name === "delete") {
 			this.gui.deletePlace(+this.container.elements.id.value);
 		} else {
@@ -1221,6 +1257,10 @@ class GuiDialog {
 		this.content.innerHTML = `
 			<input type="hidden" name="id" value="${transition.id}" />
 			<label>
+				Change name of ${transition.getName()}:
+				<input name="name" type="text" pattern="^t[1-9]\\d*$" value="${transition.getName()}" placeholder="${transition.getName()}" required />
+			</label>
+			<label>
 				Label for ${transition.getName()} (empty for τ):
 				<input name="label" type="text" pattern="^([a-z][a-zA-Z0-9]*|τ?)$" value="${transition.label}" placeholder="τ" />
 			</label>
@@ -1230,15 +1270,23 @@ class GuiDialog {
 			<button name="delete" class="red">Delete transition</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitEditTransition.bind(this));
+		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.content.querySelector("input[name=\"label\"]").addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
+		nameInput.focus();
+		nameInput.select();
 	}
 
 	onSubmitEditTransition(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
 		if (event.submitter.name === "edit") {
-			this.gui.updateTransition(+this.container.elements.id.value, this.container.elements.label.value || "τ");
+			this.gui.updateTransition(
+				+this.container.elements.id.value,
+				+this.container.elements.name.value.slice(1),
+				this.container.elements.label.value || "τ",
+			);
 		} else if (event.submitter.name === "delete") {
 			this.gui.deleteTransition(+this.container.elements.id.value);
 		} else {
@@ -1506,8 +1554,8 @@ class Gui {
 		this.dialog.openEditPlace(place);
 	}
 
-	updatePlace(placeId, tokens) {
-		this.petriNet.updatePlace(placeId, tokens);
+	updatePlace(placeId, nameId, tokens) {
+		this.petriNet.updatePlace(placeId, nameId, tokens);
 	}
 
 	deletePlace(placeId) {
@@ -1518,8 +1566,8 @@ class Gui {
 		this.dialog.openEditTransition(transition);
 	}
 
-	updateTransition(transitionId, label) {
-		this.petriNet.updateTransition(transitionId, label);
+	updateTransition(transitionId, nameId, label) {
+		this.petriNet.updateTransition(transitionId, nameId, label);
 	}
 
 	deleteTransition(transitionId) {
