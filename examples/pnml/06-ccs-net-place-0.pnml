@@ -1,10 +1,10 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+  <net id="n1" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <name>
      <text>06-ccs-net-place-0</text>
     </name>
-    <page id="cId2">
-      <place id="cId3">
+    <page id="top-level">
+      <place id="p1">
         <name>
           <text>p1</text>
         </name>

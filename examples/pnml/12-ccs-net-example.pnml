@@ -1,10 +1,10 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+  <net id="n1" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <name>
      <text>12-ccs-net-example</text>
     </name>
-    <page id="cId2">
-      <place id="cId3">
+    <page id="top-level">
+      <place id="p1">
         <name>
           <text>p1</text>
         </name>
@@ -15,7 +15,7 @@
           <text>1</text>
         </initialMarking>
       </place>
-      <place id="cId4">
+      <place id="p2">
         <name>
           <text>p2</text>
         </name>
@@ -26,7 +26,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId5">
+      <place id="p3">
         <name>
           <text>p3</text>
         </name>
@@ -37,7 +37,7 @@
           <text>2</text>
         </initialMarking>
       </place>
-      <transition id="cId6">
+      <transition id="t1">
         <name>
           <text>a</text>
         </name>
@@ -45,7 +45,7 @@
           <position x="250" y="70" />
         </graphics>
       </transition>
-      <transition id="cId7">
+      <transition id="t2">
         <name>
           <text>τ</text>
         </name>
@@ -53,7 +53,7 @@
           <position x="450" y="150" />
         </graphics>
       </transition>
-      <transition id="cId8">
+      <transition id="t3">
         <name>
           <text>b</text>
         </name>
@@ -61,13 +61,13 @@
           <position x="250" y="300" />
         </graphics>
       </transition>
-      <arc id="cId9" source="cId5" target="cId6"></arc>
-      <arc id="cId10" source="cId5" target="cId8"></arc>
-      <arc id="cId11" source="cId5" target="cId7"></arc>
-      <arc id="cId12" source="cId8" target="cId4"></arc>
-      <arc id="cId13" source="cId4" target="cId7"></arc>
-      <arc id="cId14" source="cId7" target="cId3"></arc>
-      <arc id="cId15" source="cId8" target="cId3"></arc>
+      <arc id="e0" source="p3" target="t1"></arc>
+      <arc id="e1" source="p3" target="t3"></arc>
+      <arc id="e2" source="p3" target="t2"></arc>
+      <arc id="e3" source="t3" target="p2"></arc>
+      <arc id="e4" source="p2" target="t2"></arc>
+      <arc id="e5" source="t2" target="p1"></arc>
+      <arc id="e6" source="t3" target="p1"></arc>
     </page>
   </net>
 </pnml>

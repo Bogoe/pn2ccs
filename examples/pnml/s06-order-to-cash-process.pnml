@@ -1,10 +1,10 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+  <net id="n1" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <name>
      <text>s06-order-to-cash-process</text>
     </name>
-    <page id="cId2">
-      <place id="cId3">
+    <page id="top-level">
+      <place id="p1">
         <name>
           <text>p1</text>
         </name>
@@ -15,7 +15,7 @@
           <text>1</text>
         </initialMarking>
       </place>
-      <place id="cId4">
+      <place id="p2">
         <name>
           <text>p2</text>
         </name>
@@ -26,7 +26,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId5">
+      <place id="p3">
         <name>
           <text>p3</text>
         </name>
@@ -37,7 +37,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId6">
+      <place id="p4">
         <name>
           <text>p4</text>
         </name>
@@ -48,7 +48,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId7">
+      <place id="p5">
         <name>
           <text>p5</text>
         </name>
@@ -59,7 +59,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId8">
+      <place id="p6">
         <name>
           <text>p6</text>
         </name>
@@ -70,7 +70,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId9">
+      <place id="p7">
         <name>
           <text>p7</text>
         </name>
@@ -81,7 +81,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId10">
+      <place id="p8">
         <name>
           <text>p8</text>
         </name>
@@ -92,7 +92,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId11">
+      <place id="p9">
         <name>
           <text>p9</text>
         </name>
@@ -103,7 +103,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <place id="cId12">
+      <place id="p10">
         <name>
           <text>p10</text>
         </name>
@@ -114,55 +114,55 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <transition id="cId13">
+      <transition id="t1">
         <name>
-          <text>checkstock</text>
+          <text>chkStock</text>
         </name>
         <graphics>
           <position x="120" y="190" />
         </graphics>
       </transition>
-      <transition id="cId14">
+      <transition id="t2">
         <name>
-          <text>getproduct</text>
+          <text>getProd</text>
         </name>
         <graphics>
           <position x="200" y="270" />
         </graphics>
       </transition>
-      <transition id="cId15">
+      <transition id="t3">
         <name>
-          <text>confirmorder</text>
+          <text>confirm</text>
         </name>
         <graphics>
           <position x="360" y="270" />
         </graphics>
       </transition>
-      <transition id="cId16">
+      <transition id="t4">
         <name>
-          <text>shipaddress</text>
+          <text>shipAddr</text>
         </name>
         <graphics>
           <position x="520" y="230" />
         </graphics>
       </transition>
-      <transition id="cId17">
+      <transition id="t5">
         <name>
-          <text>emitinvoice</text>
+          <text>invoice</text>
         </name>
         <graphics>
           <position x="520" y="310" />
         </graphics>
       </transition>
-      <transition id="cId18">
+      <transition id="t6">
         <name>
-          <text>shipproduct</text>
+          <text>shipProd</text>
         </name>
         <graphics>
           <position x="680" y="230" />
         </graphics>
       </transition>
-      <transition id="cId19">
+      <transition id="t7">
         <name>
           <text>payment</text>
         </name>
@@ -170,42 +170,42 @@
           <position x="680" y="310" />
         </graphics>
       </transition>
-      <transition id="cId20">
+      <transition id="t8">
         <name>
-          <text>archiveorder</text>
+          <text>archive</text>
         </name>
         <graphics>
           <position x="840" y="270" />
         </graphics>
       </transition>
-      <transition id="cId21">
+      <transition id="t9">
         <name>
-          <text>rejectorder</text>
+          <text>reject</text>
         </name>
         <graphics>
           <position x="520" y="120" />
         </graphics>
       </transition>
-      <arc id="cId22" source="cId3" target="cId13"></arc>
-      <arc id="cId23" source="cId13" target="cId4"></arc>
-      <arc id="cId24" source="cId4" target="cId14"></arc>
-      <arc id="cId25" source="cId14" target="cId5"></arc>
-      <arc id="cId26" source="cId5" target="cId15"></arc>
-      <arc id="cId27" source="cId15" target="cId6"></arc>
-      <arc id="cId28" source="cId6" target="cId16"></arc>
-      <arc id="cId29" source="cId16" target="cId8"></arc>
-      <arc id="cId30" source="cId8" target="cId18"></arc>
-      <arc id="cId31" source="cId18" target="cId10"></arc>
-      <arc id="cId32" source="cId10" target="cId20"></arc>
-      <arc id="cId33" source="cId15" target="cId7"></arc>
-      <arc id="cId34" source="cId7" target="cId17"></arc>
-      <arc id="cId35" source="cId17" target="cId9"></arc>
-      <arc id="cId36" source="cId9" target="cId19"></arc>
-      <arc id="cId37" source="cId19" target="cId11"></arc>
-      <arc id="cId38" source="cId11" target="cId20"></arc>
-      <arc id="cId39" source="cId20" target="cId12"></arc>
-      <arc id="cId40" source="cId4" target="cId21"></arc>
-      <arc id="cId41" source="cId21" target="cId12"></arc>
+      <arc id="e0" source="p1" target="t1"></arc>
+      <arc id="e1" source="t1" target="p2"></arc>
+      <arc id="e2" source="p2" target="t2"></arc>
+      <arc id="e3" source="t2" target="p3"></arc>
+      <arc id="e4" source="p3" target="t3"></arc>
+      <arc id="e5" source="t3" target="p4"></arc>
+      <arc id="e6" source="p4" target="t4"></arc>
+      <arc id="e7" source="t4" target="p6"></arc>
+      <arc id="e8" source="p6" target="t6"></arc>
+      <arc id="e9" source="t6" target="p8"></arc>
+      <arc id="e10" source="p8" target="t8"></arc>
+      <arc id="e11" source="t3" target="p5"></arc>
+      <arc id="e12" source="p5" target="t5"></arc>
+      <arc id="e13" source="t5" target="p7"></arc>
+      <arc id="e14" source="p7" target="t7"></arc>
+      <arc id="e15" source="t7" target="p9"></arc>
+      <arc id="e16" source="p9" target="t8"></arc>
+      <arc id="e17" source="t8" target="p10"></arc>
+      <arc id="e18" source="p2" target="t9"></arc>
+      <arc id="e19" source="t9" target="p10"></arc>
     </page>
   </net>
 </pnml>

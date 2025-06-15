@@ -1,10 +1,10 @@
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
-  <net id="cId1" type="http://www.pnml.org/version-2009/grammar/ptnet">
+  <net id="n1" type="http://www.pnml.org/version-2009/grammar/ptnet">
     <name>
      <text>07-ccs-net-place-1</text>
     </name>
-    <page id="cId2">
-      <place id="cId3">
+    <page id="top-level">
+      <place id="p1">
         <name>
           <text>p1</text>
         </name>
@@ -15,7 +15,7 @@
           <text>0</text>
         </initialMarking>
       </place>
-      <transition id="cId4">
+      <transition id="t1">
         <name>
           <text>τ</text>
         </name>
@@ -23,7 +23,7 @@
           <position x="280" y="160" />
         </graphics>
       </transition>
-      <arc id="cId5" source="cId3" target="cId4"></arc>
+      <arc id="e0" source="p1" target="t1"></arc>
     </page>
   </net>
 </pnml>
