@@ -14,8 +14,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/**********************************************************************
+ * This file contains an abstract syntax tree (AST) representation of *
+ * CCS processes with functions to print it as a string and HTML.     *
+ **********************************************************************
+ * @public are functions that can be called from the outside          *
+ **********************************************************************/
+
+/** Abstract class for actions. */
 class Action {
 
+	/** @protected */
 	constructor() {
 		if (this.constructor === Action) {
 			throw new Error("Action class cannot be instantiated.");
@@ -23,9 +32,11 @@ class Action {
 	}
 }
 
+/** Input action. */
 class InputAction extends Action {
 	name;
 
+	/** @public */
 	constructor(name) {
 		super();
 		if (typeof name !== "string" || !/^[a-z][a-zA-Z0-9_]*$/.test(name)) {
@@ -34,18 +45,22 @@ class InputAction extends Action {
 		this.name = name;
 	}
 
+	/** @public */
 	toString() {
 		return this.name + "?";
 	}
 
+	/** @public */
 	toHTML() {
 		return this.name.replace(/_(t\d+)$/, "<sub>$1</sub>");
 	}
 }
 
+/** Complementary (output) action to the input action. */
 class CoAction extends Action {
 	name;
 
+	/** @public */
 	constructor(name) {
 		super();
 		if (typeof name !== "string" || !/^[a-z][a-zA-Z0-9_]*$/.test(name)) {
@@ -54,28 +69,35 @@ class CoAction extends Action {
 		this.name = name;
 	}
 
+	/** @public */
 	toString() {
 		return this.name + "!";
 	}
 
+	/** @public */
 	toHTML() {
 		return "<span class=\"overline\">" + this.name.replace(/_(t\d+)$/, "<sub>$1</sub>") + "</span>";
 	}
 }
 
+/** Internal (invisible action). */
 class InternalAction extends Action {
 
+	/** @public */
 	toString() {
 		return "τ";
 	}
 
+	/** @public */
 	toHTML() {
 		return "τ";
 	}
 }
 
+/** Abstract class for processes. */
 class Process {
 
+	/** @protected */
 	constructor() {
 		if (this.constructor === Process) {
 			throw new Error("Process class cannot be instantiated.");
@@ -83,8 +105,10 @@ class Process {
 	}
 }
 
+/** Abstract class for sequential processes. */
 class Sequential extends Process {
 
+	/** @protected */
 	constructor() {
 		super();
 		if (this.constructor === Sequential) {
@@ -93,21 +117,26 @@ class Sequential extends Process {
 	}
 }
 
+/** A process that does nothing. */
 class Inaction extends Sequential {
 
+	/** @public */
 	toString() {
 		return "0";
 	}
 
+	/** @public */
 	toHTML() {
 		return "<b>0</b>";
 	}
 }
 
+/** Prefix action that executes an action and the continues as another process. */
 class Prefix extends Sequential {
 	action;
 	process;
 
+	/** @public */
 	constructor(action, process) {
 		super();
 		if (!(action instanceof Action)) {
@@ -120,18 +149,22 @@ class Prefix extends Sequential {
 		this.process = process;
 	}
 
+	/** @public */
 	toString() {
 		return this.action.toString() + "." + this.process.toString();
 	}
 
+	/** @public */
 	toHTML() {
 		return this.action.toHTML() + "." + this.process.toHTML();
 	}
 }
 
+/** Choice of prefix actions that executes exactly one of the prefix actions and discards the rest. */
 class Choice extends Sequential {
 	choices;
 
+	/** @public */
 	constructor(choices) {
 		super();
 		if (!(choices instanceof Array) || choices.length < 2 || !choices.every(choice => choice instanceof Prefix)) {
@@ -140,18 +173,22 @@ class Choice extends Sequential {
 		this.choices = choices;
 	}
 
+	/** @public */
 	toString() {
 		return "(" + this.choices.map(choice => choice.toString()).join(" + ") + ")";
 	}
 
+	/** @public */
 	toHTML() {
 		return "(" + this.choices.map(choice => choice.toHTML()).join(" + ") + ")";
 	}
 }
 
+/** Parallel composition of processes. */
 class Parallel extends Process {
 	processes;
 
+	/** @public */
 	constructor(processes) {
 		super();
 		if (!(processes instanceof Array) || processes.length < 2 || !processes.every(process => process instanceof Process)) {
@@ -160,19 +197,23 @@ class Parallel extends Process {
 		this.processes = processes;
 	}
 
+	/** @public */
 	toString() {
 		return "(" + this.processes.map(process => process.toString()).join(" | ") + ")";
 	}
 
+	/** @public */
 	toHTML() {
 		return "(" + this.processes.map(process => process.toHTML()).join(" | ") + ")";
 	}
 }
 
+/** A short hand for the parallel composition of the same process a given number of times. */
 class Exponent extends Process {
 	process;
 	count;
 
+	/** @public */
 	constructor(process, count) {
 		super();
 		if (!(process instanceof Process)) {
@@ -185,19 +226,23 @@ class Exponent extends Process {
 		this.count = count;
 	}
 
+	/** @public */
 	toString() {
 		return this.process.toString() + "^" + this.count;
 	}
 
+	/** @public */
 	toHTML() {
 		return this.process.toHTML() + "<sup>" + this.count + "</sup>";
 	}
 }
 
+/** Restricts an input action and its co-action such that they can only execute by synchronising. */
 class Restriction extends Process {
 	action;
 	process;
 
+	/** @public */
 	constructor(action, process) {
 		super();
 		if (!(action instanceof InputAction)) {
@@ -210,18 +255,22 @@ class Restriction extends Process {
 		this.process = process;
 	}
 
+	/** @public */
 	toString() {
 		return "(ν" + this.action.toString() + ")" + this.process.toString();
 	}
 
+	/** @public */
 	toHTML() {
 		return "(ν" + this.action.toHTML() + ")" + this.process.toHTML();
 	}
 }
 
+/** A constant process that is defined by a name. */
 class Constant extends Process {
 	name;
 
+	/** @public */
 	constructor(name) {
 		super();
 		if (typeof name !== "string" || !/^[A-Z][a-zA-Z0-9_]*$/.test(name)) {
@@ -230,19 +279,23 @@ class Constant extends Process {
 		this.name = name;
 	}
 
+	/** @public */
 	toString() {
 		return this.name;
 	}
 
+	/** @public */
 	toHTML() {
 		return this.name.replace(/_([pt]\d+)$/, "<sub>$1</sub>");
 	}
 }
 
+/** A CCS process including definitions of constant processes. */
 class CCS {
 	definitions;
 	process;
 
+	/** @public */
 	constructor(definitions, process) {
 		const names = Object.keys(definitions);
 		const invalidNames = names.filter(name => !/^[A-Z][a-zA-Z0-9_]*$/.test(name));
@@ -260,10 +313,12 @@ class CCS {
 		this.process = process;
 	}
 
+	/** @public */
 	toString() {
 		return Object.keys(this.definitions).map(name => name + " := " + this.definitions[name].toString()).join("\n") + "\n\n" + this.process.toString();
 	}
 
+	/** @public */
 	toHTML() {
 		return Object.keys(this.definitions).map(name => name.replace(/_([pt]\d+)$/, "<sub>$1</sub>") + " := " + this.definitions[name].toHTML()).join("<br>") + "<br><br>" + this.process.toHTML();
 	}

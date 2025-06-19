@@ -14,11 +14,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+/************************************************************************
+ * This file contains a graphical representation of Petri net using     *
+ * the underlying dynamic graph representation. This file also contains *
+ * methods for controlling user input as well as generating the visual  *
+ * presentation on the screen. Note that this file contains a           *
+ * re-implementation of the transformation into a 2-τ-synchronisation   *
+ * net since the transformation also needs to handle psychical position.*
+ ************************************************************************
+ * @public are functions that can be called from the outside            *
+ ************************************************************************/
+
+/** Graphical representation of a place. */
 class GuiPlace extends Place {
 	x;
 	y;
 	element;
 
+	/** @public */
 	constructor(id, nameId, tokens, x, y) {
 		super(id, nameId, tokens);
 		this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -31,6 +44,7 @@ class GuiPlace extends Place {
 		this.setXY(x, y);
 	}
 
+	/** @public */
 	setTokens(tokens) {
 		super.setTokens(tokens);
 		if (this.element) {
@@ -38,6 +52,7 @@ class GuiPlace extends Place {
 		}
 	}
 
+	/** @public */
 	setXY(x, y) {
 		if (!Number.isInteger(x) || !Number.isInteger(y)) {
 			throw new TypeError("Coordinates must be integers.");
@@ -49,6 +64,7 @@ class GuiPlace extends Place {
 		this.in.forEach(edge => edge.updatePoint(edge.line.points.length - 1, x, y));
 	}
 
+	/** @public */
 	setNameId(nameId) {
 		super.setNameId(nameId);
 		if (this.element) {
@@ -57,11 +73,13 @@ class GuiPlace extends Place {
 	}
 }
 
+/** Graphical representation of a transition. */
 class GuiTransition extends Transition {
 	x;
 	y;
 	element;
 
+	/** @public */
 	constructor(id, nameId, label, x, y) {
 		super(id, nameId, label);
 		this.element = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -74,6 +92,7 @@ class GuiTransition extends Transition {
 		this.setXY(x, y);
 	}
 
+	/** @public */
 	setLabel(label) {
 		super.setLabel(label);
 		if (this.element) {
@@ -81,6 +100,7 @@ class GuiTransition extends Transition {
 		}
 	}
 
+	/** @public */
 	setXY(x, y) {
 		if (!Number.isInteger(x) || !Number.isInteger(y)) {
 			throw new TypeError("Coordinates must be integers.");
@@ -92,6 +112,7 @@ class GuiTransition extends Transition {
 		this.in.forEach(edge => edge.updatePoint(edge.line.points.length - 1, x, y));
 	}
 
+	/** @public */
 	setNameId(nameId) {
 		super.setNameId(nameId);
 		if (this.element) {
@@ -100,11 +121,13 @@ class GuiTransition extends Transition {
 	}
 }
 
+/** Graphical representation of a (multi-)edge. */
 class GuiEdge extends Edge {
 	element;
 	line;
 	points;
 
+	/** @public */
 	constructor(id, from, to, weight, points, isReadOnly) {
 		super(id, from, to, weight);
 		if (!(from instanceof GuiPlace || from instanceof GuiTransition)) {
@@ -128,6 +151,7 @@ class GuiEdge extends Edge {
 		this.updateEndPoint();
 	}
 
+	/** @private */
 	updateStartPoint() {
 		this.line.points[0].x = this.from.x;
 		this.line.points[0].y = this.from.y;
@@ -146,6 +170,7 @@ class GuiEdge extends Edge {
 		}
 	}
 
+	/** @private */
 	updateEndPoint() {
 		const n = this.line.points.length;
 		this.line.points[n - 1].x = this.to.x;
@@ -165,6 +190,7 @@ class GuiEdge extends Edge {
 		}
 	}
 
+	/** @package */
 	updatePoint(index, x, y) {
 		const n = this.line.points.length;
 		if (index < 0 || n - 1 < index) {
@@ -181,6 +207,7 @@ class GuiEdge extends Edge {
 	}
 }
 
+/** Graphical representation of a point on an multi-edge. */
 class GuiEdgePoint {
 	edge;
 	x;
@@ -188,6 +215,7 @@ class GuiEdgePoint {
 	index;
 	element;
 
+	/** @public */
 	constructor(edge, point, index) {
 		if (!(edge instanceof Edge)) {
 			throw new TypeError("Edge must be a gui-edge.");
@@ -208,6 +236,7 @@ class GuiEdgePoint {
 		this.setXY(point.x, point.y);
 	}
 
+	/** @public */
 	setXY(x, y) {
 		if (!Number.isInteger(x) || !Number.isInteger(y)) {
 			throw new TypeError("Coordinates must be integers.");
@@ -219,6 +248,7 @@ class GuiEdgePoint {
 	}
 }
 
+/** Graphical representation of a Petri net with tons of bookkeeping for the current view. */
 class GuiPetriNet extends PetriNet {
 	gui;
 	svg;
@@ -243,6 +273,7 @@ class GuiPetriNet extends PetriNet {
 	lastY = 0;
 	isBatch = false;
 
+	/** @package */
 	constructor(gui, svg, isReadOnly) {
 		super();
 		if (!(gui instanceof Gui)) {
@@ -285,12 +316,14 @@ class GuiPetriNet extends PetriNet {
 		this.onResize();
 	}
 
+	/** @public */
 	update() {
 		if (!this.isBatch && !this.isReadOnly) {
 			this.gui.update();
 		}
 	}
 
+	/** @public */
 	addPlace(nameId, tokens, x, y) {
 		if (nameId === Node.AUTO_NAME_ID || this.placeNames[nameId]) {
 			nameId = this.placeNames.length;
@@ -303,6 +336,7 @@ class GuiPetriNet extends PetriNet {
 		return place;
 	}
 
+	/** @public */
 	addTransition(nameId, label, x, y) {
 		if (nameId === Node.AUTO_NAME_ID || this.transitionNames[nameId]) {
 			nameId = this.transitionNames.length;
@@ -315,6 +349,7 @@ class GuiPetriNet extends PetriNet {
 		return transition;
 	}
 
+	/** @public */
 	addEdge(from, to, weight, points) {
 		if (this.places[from.id] !== from && this.transitions[from.id] !== from) {
 			throw new Error("Unrelated from-node cannot be used.");
@@ -329,6 +364,7 @@ class GuiPetriNet extends PetriNet {
 		return edge;
 	}
 
+	/** @public */
 	addDirectEdge(from, to, weight) {
 		const source = this.svg.createSVGPoint();
 		source.x = from.x;
@@ -339,6 +375,7 @@ class GuiPetriNet extends PetriNet {
 		return this.addEdge(from, to, weight, [source, target]);
 	}
 
+	/** @public */
 	removePlace(place) {
 		if (!(place instanceof GuiPlace)) {
 			throw new Error("Cannot remove a non-gui-place.");
@@ -358,6 +395,7 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/** @public */
 	removeTransition(transition) {
 		if (!(transition instanceof GuiTransition)) {
 			throw new Error("Cannot remove a non-gui-transition.");
@@ -377,6 +415,7 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/** @public */
 	removeEdge(edge) {
 		if (!(edge instanceof GuiEdge)) {
 			throw new Error("Cannot remove a non-gui-edge.");
@@ -394,8 +433,12 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/** @public */
 	updatePlace(placeId, nameId, tokens) {
 		const place = this.places[placeId];
+		if (place === undefined) {
+			throw new Error("Unrelated place cannot be updated.");
+		}
 		delete this.placeNames[place.nameId];
 		place.setNameId(nameId);
 		place.setTokens(tokens);
@@ -404,8 +447,12 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/** @public */
 	updateTransition(transitionId, nameId, label) {
 		const transition = this.transitions[transitionId];
+		if (transition === undefined) {
+			throw new Error("Unrelated transition cannot be updated.");
+		}
 		delete this.transitionNames[transition.nameId];
 		transition.setNameId(nameId);
 		transition.setLabel(label);
@@ -414,21 +461,25 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/** @public */
 	deletePlace(placeId) {
 		this.setSelectedElement(null);
 		this.removePlace(this.places[placeId]);
 	}
 
+	/** @public */
 	deleteTransition(transitionId) {
 		this.setSelectedElement(null);
 		this.removeTransition(this.transitions[transitionId]);
 	}
 
+	/** @public */
 	deleteEdge(edgeId) {
 		this.setSelectedElement(null);
 		this.removeEdge(this.edges[edgeId]);
 	}
 
+	/** @public */
 	clear() {
 		this.isBatch = true;
 		this.setSelectedElement(null);
@@ -453,15 +504,28 @@ class GuiPetriNet extends PetriNet {
 		this.update();
 	}
 
+	/**
+	 * Updates this Petri net to be the 2-τ-synchronisation net obtained by transforming the given Petri net into
+	 * a 2-τ-synchronisation net like in PetriNet::to2TauSynchronisationNet, except that this also takes
+	 * position information into account. In particular, it makes space between places and transitions that
+	 * are affected to be sure that there are no overlapping places and transitions.
+	 *
+	 * @public
+	 * @param {GuiPetriNet} Petri net to transform into a 2-τ-synchronisation net.
+	 * @return {boolean} True iff the given Petri net could be encoded into a 2-τ-synchronisation net.
+	 * @throws {Error} If the given Petri net is not a 2-τ-synchronisation net or a group-choice net.
+	 * */
 	update2TauSynchronisationNet(petriNet) {
 		if (!this.isReadOnly) {
 			throw new Error("Cannot update editable Petri net to a 2-τ-synchronisation.");
 		}
+		// Clears this Petri net.
 		this.clear();
 		const is2TauSynchronisationNet = petriNet.is2TauSynchronisationNet();
 		if (!is2TauSynchronisationNet && !petriNet.isGroupChoiceNet()) {
 			return false;
 		}
+		// Copy Petri net.
 		petriNet.places.forEach(place => this.addPlace(place.nameId, place.tokens, place.x, place.y));
 		petriNet.transitions.forEach(transition => this.addTransition(transition.nameId, transition.label, transition.x, transition.y));
 		petriNet.places.forEach(place => place.out.forEach(edge => this.addEdge(this.places[edge.from.id], this.transitions[edge.to.id], edge.weight, Array.from(edge.line.points))));
@@ -471,10 +535,12 @@ class GuiPetriNet extends PetriNet {
 		}
 		this.transitions.forEach(transition => {
 			if (transition.in.length <= (transition.label === "τ" ? 2 : 1)) {
+				// Already satisfies the 2-τ-synchronisation net constraints.
 				return;
 			}
 			const places = transition.in.map(edge => edge.from);
 			const transitions = places[0].out.map(edge => edge.to);
+			// Generate the random synchronisation pattern.
 			const done = transitions.every(transition => transition.label === "τ") ? 2 : 1;
 			const order = [];
 			for (let i = places.length - 1; i >= done; i--) {
@@ -482,6 +548,7 @@ class GuiPetriNet extends PetriNet {
 				const second = Math.floor((i - 1) * Math.random());
 				order.push(Math.min(first, second), Math.max(first, second + (first <= second)));
 			}
+			// Calculate how much space is needed between the places and transitions to fit the chosen synchronisation pattern.
 			const layers = [0];
 			let lastIndex = 0;
 			let numLayers = 1;
@@ -503,9 +570,12 @@ class GuiPetriNet extends PetriNet {
 			const totalWidth = 210 * numLayers + 20;
 			const xCut = transitions.reduce((xCut, transition) => Math.min(transition.x, xCut), transitions[0].x);
 			const yMid = Math.round(transitions.reduce((ySum, transition) => transition.y + ySum, 0) / transitions.length / 5) * 5 - totalHeight / 2;
+			// Move all places and transitions that need to be moved to make space enough.
 			this.places.forEach(place => place.setXY(place.x + 70 < xCut ? place.x : place.x + totalWidth, place.y));
 			this.transitions.forEach(transition => transition.setXY(transition.x + 75 < xCut ? transition.x : transition.x + totalWidth, transition.y));
+			// Remove all outgoing edges from affected places (and ingoing edges from affected transitions).
 			places.forEach(place => place.out.slice().forEach(edge => this.removeEdge(edge)));
+			// Synchronise places in pairs with positions based on the synchronisation pattern.
 			let nodeIndex = 0;
 			for (let i = 0; i < order.length; i += 2) {
 				if (nodeIndex > 0 && layers[(i - 2) >>> 1] != layers[i >>> 1]) {
@@ -521,11 +591,13 @@ class GuiPetriNet extends PetriNet {
 				places.pop();
 				nodeIndex++;
 			}
+			// Add the edges from the final place to all transitions.
 			places.forEach(place => transitions.forEach(transition => this.addDirectEdge(place, transition, 1)));
 		});
 		return true;
 	}
 
+	/** @public */
 	import(text) {
 		if (this.isReadOnly) {
 			throw new Error("Cannot import in a read-only Petri net.");
@@ -541,6 +613,7 @@ class GuiPetriNet extends PetriNet {
 				throw new Error("Invalid XML");
 			}
 			const nodes = {};
+			// Import places.
 			xml.querySelectorAll("net>place, page>place").forEach((place, index) => {
 				if (!place.id) {
 					throw new Error("Place without id.");
@@ -556,6 +629,7 @@ class GuiPetriNet extends PetriNet {
 				const nameId = /^p[1-9]\d*$/.test(place.id) ? +place.id.slice(1) : Node.AUTO_NAME_ID;
 				nodes[place.id] = this.addPlace(nameId, tokens, x, y);
 			});
+			// Import transitions.
 			xml.querySelectorAll("net>transition, page>transition").forEach((transition, index) => {
 				if (!transition.id) {
 					throw new Error("Transition without id.");
@@ -571,6 +645,7 @@ class GuiPetriNet extends PetriNet {
 				const nameId = /^t[1-9]\d*$/.test(transition.id) ? +transition.id.slice(1) : Node.AUTO_NAME_ID;
 				nodes[transition.id] = this.addTransition(nameId, label, x, y);
 			});
+			// Import edges.
 			xml.querySelectorAll("net>arc, page>arc").forEach(edge => {
 				const sourceId = edge.getAttribute("source");
 				const targetId = edge.getAttribute("target");
@@ -587,6 +662,7 @@ class GuiPetriNet extends PetriNet {
 				this.addEdge(source, target, 1, Array.from(this.tempEdge.points));
 				this.tempEdge.points.clear();
 			});
+			// Center around the first place or transition such that the user can see at least one node.
 			const node = this.places[0] || this.transitions[0];
 			if (node) {
 				this.viewX = node.x - this.svg.clientWidth / 2;
@@ -604,6 +680,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @public */
 	export(name) {
 		return `
 <pnml xmlns="http://www.pnml.org/version-2009/grammar/pnml">
@@ -644,6 +721,7 @@ class GuiPetriNet extends PetriNet {
 		`.trim().replace(/\n( +\n)+/g, "\n") + "\n";
 	}
 
+	/** @public */
 	addTempPoint(x, y) {
 		const point = this.svg.createSVGPoint();
 		point.x = x;
@@ -651,6 +729,7 @@ class GuiPetriNet extends PetriNet {
 		this.tempEdge.points.appendItem(point);
 	}
 
+	/** @package */
 	setSelectedElement(element) {
 		if (this.selectedElement) {
 			this.selectedElement.classList.remove("selected");
@@ -662,6 +741,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onDragOver(event) {
 		if (this.isReadOnly) {
 			return;
@@ -670,6 +750,7 @@ class GuiPetriNet extends PetriNet {
 		event.dataTransfer.dropEffect = "copy";
 	}
 
+	/** @private */
 	onDrop(event) {
 		event.preventDefault();
 		const isDrop = event.type === "drop";
@@ -691,6 +772,7 @@ class GuiPetriNet extends PetriNet {
 		this.setSelectedElement(null);
 	}
 
+	/** @private */
 	onPointerDown(event) {
 		if (this.isZooming) {
 			return;
@@ -716,6 +798,7 @@ class GuiPetriNet extends PetriNet {
 		this.moveElement = null;
 	}
 
+	/** @private */
 	onPointerMove(event) {
 		if (this.isZooming) {
 			return;
@@ -732,6 +815,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onPointerUp(event) {
 		if (this.isZooming) {
 			return;
@@ -754,6 +838,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onClick(event) {
 		if (this.isZooming) {
 			return;
@@ -808,6 +893,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onContextMenu(event) {
 		if (this.isZooming) {
 			return;
@@ -852,25 +938,30 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onTouchStart(event) {
 		this.isZooming = event.touches.length >= 2;
 	}
 
+	/** @private */
 	onTouchMove(event) {
 		if (!this.isZooming) {
 			event.preventDefault();
 		}
 	}
 
+	/** @private */
 	onTouchEnd(event) {
 		this.isZooming = event.touches.length >= 2;
 	}
 
+	/** @package */
 	onResize(event) {
 		this.hasMoved = false;
 		this.svg.setAttribute("viewBox", `${this.viewX} ${this.viewY} ${this.svg.clientWidth} ${this.svg.clientHeight}`);
 	}
 
+	/** @package */
 	onKeyDown(event) {
 		if (!this.selectedElement || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || this.hasMoved || this.isReadOnly) {
 			return;
@@ -902,6 +993,7 @@ class GuiPetriNet extends PetriNet {
 		}
 	}
 
+	/** @private */
 	onMove(timeStamp) {
 		this.animationFrame = 0;
 		if (this.moveElement) {
@@ -919,6 +1011,7 @@ class GuiPetriNet extends PetriNet {
 	}
 }
 
+/** Graphical representation of the classification figure. */
 class GuiClassification {
 	container;
 	classPetriNet;
@@ -929,6 +1022,7 @@ class GuiClassification {
 	classWorkflowNet;
 	classFreeChoiceWorkflowNet;
 
+	/** @package */
 	constructor(container) {
 		if (!(container instanceof SVGSVGElement)) {
 			throw new TypeError("The container must be a SVG-element.");
@@ -974,6 +1068,7 @@ class GuiClassification {
 		this.classFreeChoiceWorkflowNet = this.container.children[6];
 	}
 
+	/** @package */
 	update(petriNet) {
 		const isWorkflowNet = petriNet.isWorkflowNet();
 		const isFreeChoiceNet = petriNet.isFreeChoiceNet();
@@ -991,10 +1086,12 @@ class GuiClassification {
 	}
 }
 
+/** Display of the CCS. */
 class GuiCCS {
 	output;
 	ccs = null;
 
+	/** @package */
 	constructor(output) {
 		if (!(output instanceof HTMLPreElement)) {
 			throw new TypeError("Output must be a html pre-element.");
@@ -1002,6 +1099,7 @@ class GuiCCS {
 		this.output = output;
 	}
 
+	/** @package */
 	update(petriNet) {
 		if (petriNet.isGroupChoiceNet()) {
 			petriNet = petriNet.to2TauSynchronisationNet();
@@ -1015,11 +1113,13 @@ class GuiCCS {
 		return true;
 	}
 
+	/** @public */
 	export() {
 		return this.ccs.toString() + "\n";
 	}
 }
 
+/** Class for the dialogs shown for warnings and when editing things. */
 class GuiDialog {
 	gui;
 	container;
@@ -1029,6 +1129,7 @@ class GuiDialog {
 	buttons;
 	submitFunction;
 
+	/** @package */
 	constructor(gui, container) {
 		if (!(gui instanceof Gui)) {
 			throw new Error("Gui must be a Gui.");
@@ -1046,20 +1147,24 @@ class GuiDialog {
 		this.buttonClose.addEventListener("click", this.close.bind(this));
 	}
 
+	/** @package */
 	isVisible() {
 		return this.container.classList.contains("grid");
 	}
 
+	/** @package */
 	onInput(event) {
 		const isValid = this.container.checkValidity();
 		this.buttons.querySelectorAll("[data-valid]").forEach(e => e.disabled = !isValid);
 	}
 
+	/** @package */
 	close(event) {
 		this.container.removeEventListener("submit", this.submitFunction);
 		this.container.classList.remove("grid");
 	}
 
+	/** @package */
 	openAlert(title, text) {
 		this.title.innerText = title;
 		this.content.innerText = text;
@@ -1070,6 +1175,7 @@ class GuiDialog {
 		this.container.classList.add("grid");
 	}
 
+	/** @package */
 	onSubmitAlert(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1082,6 +1188,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openReset() {
 		this.title.innerText = "Reset";
 		this.content.innerHTML = `
@@ -1095,6 +1202,7 @@ class GuiDialog {
 		this.container.classList.add("grid");
 	}
 
+	/** @private */
 	onSubmitReset(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1109,6 +1217,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openImportPN() {
 		this.title.innerText = "Import Petri Net";
 		this.content.innerHTML = `
@@ -1128,6 +1237,7 @@ class GuiDialog {
 		fileInput.focus();
 	}
 
+	/** @private */
 	async onSubmitImportPN(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1145,6 +1255,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openExportPN() {
 		this.title.innerText = "Export Petri Net";
 		this.content.innerHTML = `
@@ -1165,6 +1276,7 @@ class GuiDialog {
 		nameInput.select();
 	}
 
+	/** @private */
 	onSubmitExportPN(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1177,6 +1289,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openExportCCS() {
 		this.title.innerText = "Export CCS";
 		this.content.innerHTML = `
@@ -1196,6 +1309,7 @@ class GuiDialog {
 		nameInput.select();
 	}
 
+	/** @private */
 	onSubmitExportCCS(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1208,6 +1322,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openEditPlace(place) {
 		this.title.innerText = "Edit Place";
 		this.content.innerHTML = `
@@ -1234,6 +1349,7 @@ class GuiDialog {
 		nameInput.select();
 	}
 
+	/** @private */
 	onSubmitEditPlace(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1252,6 +1368,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openEditTransition(transition) {
 		this.title.innerText = "Edit Transition";
 		this.content.innerHTML = `
@@ -1278,6 +1395,7 @@ class GuiDialog {
 		nameInput.select();
 	}
 
+	/** @private */
 	onSubmitEditTransition(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1296,6 +1414,7 @@ class GuiDialog {
 		this.close(event);
 	}
 
+	/** @package */
 	openEditEdge(edge) {
 		this.title.innerText = "Edit Edge";
 		this.content.innerHTML = `
@@ -1310,6 +1429,7 @@ class GuiDialog {
 		this.container.classList.add("grid");
 	}
 
+	/** @private */
 	onSubmitEditEdge(event) {
 		event.preventDefault();
 		this.buttons.querySelectorAll("button").forEach(e => e.disabled = true);
@@ -1325,6 +1445,7 @@ class GuiDialog {
 	}
 }
 
+/** Overall controller class for handling and delegating user input. */
 class Gui {
 	petriNet;
 	petriNet2Tau;
@@ -1352,6 +1473,7 @@ class Gui {
 	draggingOffsetY = 0;
 	animationFrame = 0;
 
+	/** @package */
 	constructor() {
 		document.querySelector("#noSupport").classList.add("hide");
 
@@ -1400,26 +1522,32 @@ class Gui {
 		this.update();
 	}
 
+	/** @private */
 	onReset(event) {
 		this.dialog.openReset();
 	}
 
+	/** @package */
 	reset(event) {
 		this.petriNet.clear();
 	}
 
+	/** @private */
 	onImportPN(event) {
 		this.dialog.openImportPN();
 	}
 
+	/** @package */
 	importPN(text) {
 		this.petriNet.import(text);
 	}
 
+	/** @private */
 	onExportPN(event) {
 		this.dialog.openExportPN();
 	}
 
+	/** @package */
 	exportPN(name) {
 		const file = new Blob([this.petriNet.export(name)], {type: "text/plain"});
 		const url = window.URL.createObjectURL(file);
@@ -1432,10 +1560,12 @@ class Gui {
 		window.URL.revokeObjectURL(url);
 	}
 
+	/** @private */
 	onExportCCS(event) {
 		this.dialog.openExportCCS();
 	}
 
+	/** @package */
 	exportCCS(name) {
 		const file = new Blob([this.ccs.export()], {type: "text/plain"});
 		const url = window.URL.createObjectURL(file);
@@ -1448,24 +1578,29 @@ class Gui {
 		window.URL.revokeObjectURL(url);
 	}
 
+	/** @private */
 	onHelp(event) {
 		this.help.classList.add("grid");
 	}
 
+	/** @private */
 	onCloseHelp(event) {
 		this.help.classList.remove("grid");
 	}
 
+	/** @private */
 	onDragStartPlace(event) {
 		event.dataTransfer.dropEffect = "copy";
 		event.dataTransfer.setData("text/plain", `p${event.offsetX},${event.offsetY}`);
 	}
 
+	/** @private */
 	onDragStartTransition(event) {
 		event.dataTransfer.dropEffect = "copy";
 		event.dataTransfer.setData("text/plain", `t${event.offsetX},${event.offsetY}`);
 	}
 
+	/** @private */
 	onPointerDownPlace(event) {
 		event.preventDefault();
 		this.draggingOffsetX = Math.round(event.offsetX);
@@ -1475,6 +1610,7 @@ class Gui {
 		this.onPointerMove(event);
 	}
 
+	/** @private */
 	onPointerDownTransition(event) {
 		event.preventDefault();
 		this.draggingOffsetX = Math.round(event.offsetX);
@@ -1484,6 +1620,7 @@ class Gui {
 		this.onPointerMove(event);
 	}
 
+	/** @private */
 	onPointerMove(event) {
 		if (!this.draggingElement) {
 			return;
@@ -1495,6 +1632,7 @@ class Gui {
 		}
 	}
 
+	/** @private */
 	onPointerUp(event) {
 		if (!this.draggingElement) {
 			return;
@@ -1513,22 +1651,26 @@ class Gui {
 		}
 	}
 
+	/** @private */
 	onMove(timeStamp) {
 		this.animationFrame = 0;
 		this.draggingElement.style.left = `${this.draggingX - this.draggingOffsetX}px`;
 		this.draggingElement.style.top = `${this.draggingY - this.draggingOffsetY}px`;
 	}
 
+	/** @private */
 	preventDefault(event) {
 		event.preventDefault();
 	}
 
+	/** @private */
 	onToggleClick(event) {
 		const container = event.target.parentElement;
 		container.classList.toggle("collapsed");
 		this.onResize();
 	}
 
+	/** @private */
 	onKeyDown(event) {
 		if (this.dialog.isVisible()) {
 			if (event.key === "Escape") {
@@ -1539,45 +1681,55 @@ class Gui {
 		this.petriNet.onKeyDown(event);
 	}
 
+	/** @private */
 	onResize(event) {
 		this.petriNet.onResize(event);
 		this.petriNet2Tau.onResize(event);
 	}
 
+	/** @package */
 	update() {
 		const isEncodable = this.petriNet2Tau.update2TauSynchronisationNet(this.petriNet);
 		this.classification.update(this.petriNet);
 		this.buttonExportCCS.disabled = !this.ccs.update(isEncodable ? this.petriNet2Tau : this.petriNet);
 	}
 
+	/** @package */
 	editPlace(place) {
 		this.dialog.openEditPlace(place);
 	}
 
+	/** @package */
 	updatePlace(placeId, nameId, tokens) {
 		this.petriNet.updatePlace(placeId, nameId, tokens);
 	}
 
+	/** @package */
 	deletePlace(placeId) {
 		this.petriNet.deletePlace(placeId);
 	}
 
+	/** @package */
 	editTransition(transition) {
 		this.dialog.openEditTransition(transition);
 	}
 
+	/** @package */
 	updateTransition(transitionId, nameId, label) {
 		this.petriNet.updateTransition(transitionId, nameId, label);
 	}
 
+	/** @package */
 	deleteTransition(transitionId) {
 		this.petriNet.deleteTransition(transitionId);
 	}
 
+	/** @package */
 	editEdge(edge) {
 		this.dialog.openEditEdge(edge);
 	}
 
+	/** @package */
 	deleteEdge(edgeId) {
 		this.petriNet.deleteEdge(edgeId);
 	}
