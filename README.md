@@ -114,7 +114,7 @@ Petri nets from the official PNML website [pnml.org](https://www.pnml.org/versio
 - [`x9-token-ring`](https://www.pnml.org/version-2009/examples/Token-ring.pnml) (Petri net - no image)
 
 
-# Reproducing Examples
+# How to Reproduce Examples
 Below are instructions to reproduce examples. All examples can be imported as a PNML-file and there are step-by-step guides for a few examples.
 
 **Important:** In the following, be aware that:
