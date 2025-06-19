@@ -434,6 +434,16 @@ class GuiPetriNet extends PetriNet {
 	}
 
 	/** @public */
+	isPlaceNameIdFree(nameId) {
+		return this.placeNames[nameId] === undefined;
+	}
+
+	/** @public */
+	isTransitionNameIdFree(nameId) {
+		return this.transitionNames[nameId] === undefined;
+	}
+
+	/** @public */
 	updatePlace(placeId, nameId, tokens) {
 		const place = this.places[placeId];
 		if (place === undefined) {
@@ -1154,7 +1164,16 @@ class GuiDialog {
 
 	/** @package */
 	onInput(event) {
-		const isValid = this.container.checkValidity();
+		const input = event.target;
+		let isValid = this.container.checkValidity();
+		if (input.name === "nameId") {
+			input.setCustomValidity("");
+			if (input.checkValidity()) {
+				const isValidNameId = input.value === input.placeholder || this.gui.isFreeNameId(input.value);
+				input.setCustomValidity(isValidNameId ? "" : "The name already exists.");
+				isValid = isValid && isValidNameId;
+			}
+		}
 		this.buttons.querySelectorAll("[data-valid]").forEach(e => e.disabled = !isValid);
 	}
 
@@ -1329,7 +1348,7 @@ class GuiDialog {
 			<input type="hidden" name="id" value="${place.id}" />
 			<label>
 				Change name of ${place.getName()}:
-				<input name="name" type="text" pattern="^p[1-9]\\d*$" value="${place.getName()}" placeholder="${place.getName()}" required />
+				<input name="nameId" type="text" pattern="^p[1-9]\\d*$" value="${place.getName()}" placeholder="${place.getName()}" required />
 			</label>
 			<label>
 				Number of tokens for ${place.getName()}:
@@ -1341,7 +1360,7 @@ class GuiDialog {
 			<button name="delete" class="red">Delete place</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitEditPlace.bind(this));
-		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		const nameInput = this.content.querySelector("input[name=\"nameId\"]");
 		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.content.querySelector("input[name=\"tokens\"]").addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
@@ -1356,7 +1375,7 @@ class GuiDialog {
 		if (event.submitter.name === "edit") {
 			this.gui.updatePlace(
 				+this.container.elements.id.value,
-				+this.container.elements.name.value.slice(1),
+				+this.container.elements.nameId.value.slice(1),
 				+this.container.elements.tokens.value,
 			);
 		} else if (event.submitter.name === "delete") {
@@ -1375,7 +1394,7 @@ class GuiDialog {
 			<input type="hidden" name="id" value="${transition.id}" />
 			<label>
 				Change name of ${transition.getName()}:
-				<input name="name" type="text" pattern="^t[1-9]\\d*$" value="${transition.getName()}" placeholder="${transition.getName()}" required />
+				<input name="nameId" type="text" pattern="^t[1-9]\\d*$" value="${transition.getName()}" placeholder="${transition.getName()}" required />
 			</label>
 			<label>
 				Label for ${transition.getName()} (empty for τ):
@@ -1387,7 +1406,7 @@ class GuiDialog {
 			<button name="delete" class="red">Delete transition</button>
 		`;
 		this.container.addEventListener("submit", this.submitFunction = this.onSubmitEditTransition.bind(this));
-		const nameInput = this.content.querySelector("input[name=\"name\"]");
+		const nameInput = this.content.querySelector("input[name=\"nameId\"]");
 		nameInput.addEventListener("input", this.onInput.bind(this));
 		this.content.querySelector("input[name=\"label\"]").addEventListener("input", this.onInput.bind(this));
 		this.container.classList.add("grid");
@@ -1402,7 +1421,7 @@ class GuiDialog {
 		if (event.submitter.name === "edit") {
 			this.gui.updateTransition(
 				+this.container.elements.id.value,
-				+this.container.elements.name.value.slice(1),
+				+this.container.elements.nameId.value.slice(1),
 				this.container.elements.label.value || "τ",
 			);
 		} else if (event.submitter.name === "delete") {
@@ -1692,6 +1711,11 @@ class Gui {
 		const isEncodable = this.petriNet2Tau.update2TauSynchronisationNet(this.petriNet);
 		this.classification.update(this.petriNet);
 		this.buttonExportCCS.disabled = !this.ccs.update(isEncodable ? this.petriNet2Tau : this.petriNet);
+	}
+
+	/** @package */
+	isFreeNameId(nameId) {
+		return nameId[0] === "p" ? this.petriNet.isPlaceNameIdFree(+nameId.slice(1)) : this.petriNet.isTransitionNameIdFree(+nameId.slice(1));
 	}
 
 	/** @package */
